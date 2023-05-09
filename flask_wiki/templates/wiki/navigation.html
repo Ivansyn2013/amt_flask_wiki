@@ -15,11 +15,16 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('wiki.index') }}">{{ _('Home') }}</a>
+                <a class="nav-link" href="{{ url_for('wiki.index') }}">{{ _('Главная') }}</a>
             </li>
             {% if can_edit_wiki %}
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('wiki.files') }}">{{ _('Files') }}</a>
+                <a class="nav-link" href="{{ url_for('wiki.files') }}">{{ _('Файлы') }}</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('wiki.create_page') }}">
+                  {{ _('Создать страницу') }}</a>
             </li>
             {% endif %}
         </ul>

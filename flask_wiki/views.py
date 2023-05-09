@@ -225,3 +225,10 @@ def not_found(error):
 def forbidden(error):
     return render_template(
         current_app.config.get('WIKI_FORBIDDEN_TEMPLATE')), 403
+
+
+@blueprint.route('/create_page')
+@can_read_permission
+def create_page():
+    pages = current_wiki.pages()
+    return render_template('wiki/create_page.html', pages=pages)

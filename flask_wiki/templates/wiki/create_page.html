@@ -1,0 +1,50 @@
+
+{% extends config.get('WIKI_BASE_TEMPLATE') %}
+{% block title -%}
+Создать страницу
+{% endblock title %}
+
+{% block navigation %}
+{% endblock %}
+
+{% block content %}
+  <div id="sidebar">
+        <h2>Wiki Pages</h2>
+        <ul>
+            {% for page in pages %}
+            <li><a href="{{ url_for('wiki.page', url=page.url) }}">{{ page
+            .title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="content">
+<main class="row mt-4 wiki-page">
+  <div class="col-md-7 offset-md-2">
+      <h1>{{ _('Создать страницу') }}</h1>
+      <p>{{ _('Выбери название раздела') }}</p>
+      <p>
+      <form id="myForm" class="form-group" method="post"
+            action="{{ url_for('wiki.edit', url='DEFAULT_VALUE') }}">
+
+        <label  class="form-label">Введи раздел</label>
+
+        <input name="my_input" type="text" class="input-group form-control">
+
+        <button type="submit" class="btn ">Создать</button>
+
+      </form>
+      </p>
+  </div>
+</main>
+
+  <script>
+    var form = document.getElementById('myForm');
+    var input = form.querySelector('input[name="my_input"]');
+    var action = form.getAttribute('action');
+
+    input.addEventListener('input', function(event) {
+        var value = input.value;
+        form.setAttribute('action', action.replace('DEFAULT_VALUE', encodeURIComponent(value)));
+    });
+</script>
+{% endblock %}
