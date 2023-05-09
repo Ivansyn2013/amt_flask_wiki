@@ -22,6 +22,13 @@ class EditorForm(FlaskForm):
     def get_translations(self, form):
             return super(FlaskForm.Meta, self).get_translations(form)
 
-    title = StringField(_('Title'), [InputRequired()])
-    body = TextAreaField(_('Body'), [InputRequired()])
-    tags = StringField(_('Tags'))
+    title = StringField(_('Название'), [InputRequired()])
+    body = TextAreaField(_('Содержание'), [InputRequired()])
+    tags = StringField(_('Теги'))
+
+
+class NewPageForm(FlaskForm):
+    class Meta:
+        pass
+
+    url = StringField(_('Название'), [InputRequired()])

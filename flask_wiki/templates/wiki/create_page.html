@@ -9,7 +9,7 @@
 
 {% block content %}
   <div id="sidebar">
-        <h2>Wiki Pages</h2>
+        <h2>Новая страница WIKI</h2>
         <ul>
             {% for page in pages %}
             <li><a href="{{ url_for('wiki.page', url=page.url) }}">{{ page
@@ -17,24 +17,27 @@
             {% endfor %}
         </ul>
     </div>
-    <div id="content">
-<main class="row mt-4 wiki-page">
+  <div id="content">
+<div class="row mt-4 wiki-page">
   <div class="col-md-7 offset-md-2">
       <h1>{{ _('Создать страницу') }}</h1>
       <p>{{ _('Выбери название раздела') }}</p>
       <p>
-      <form id="myForm" class="form-group" method="post"
+      <form id="new_page_form" class="form-group" method="post"
             action="{{ url_for('wiki.edit', url='DEFAULT_VALUE') }}">
 
         <label  class="form-label">Введи раздел</label>
 
         <input name="my_input" type="text" class="input-group form-control">
 
-        <button type="submit" class="btn ">Создать</button>
+        <button type="submit" class="btn btn-sm btn-primary"
+                style="margin-top: 10px">Создать</button>
 
       </form>
       </p>
   </div>
+    </div>
+    </div>
 </main>
 
   <script>

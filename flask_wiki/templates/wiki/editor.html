@@ -18,23 +18,23 @@
     <ul class="nav nav-tabs mb-2" role="tablist">
       <li class="nav-item">
         <a class="nav-link active" data-toggle="tab" id="edit-tab" href="#edit" role="tab" aria-controls="home"
-          aria-selected="true">{{ _('Edit') }}</a>
+          aria-selected="true">{{ _('Редактировать') }}</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" data-toggle="tab" id="preview-tab" href="#preview" role="tab"
           data-preview-url="{{ url_for('wiki.preview') }}" aria-controls="profile"
-          aria-selected="false">{{ _('Preview') }}</a>
+          aria-selected="false">{{ _('Предпросмотр') }}</a>
       </li>
       <li class="ml-auto">
         <div class="editor-btns text-right align-self-center">
           <button type="button" class="btn btn-outline-danger btn-sm ml-1" data-toggle="modal" data-target="#deleteModal">
-            <i class="fa fa-trash" aria-hidden="true"></i> {{ _('Delete') }}
+            <i class="fa fa-trash" aria-hidden="true"></i> {{ _('Удалить') }}
           </button>
           {%- set pathes = path | edit_path_list -%}
           {%- if pathes %}
           <div class="btn-group">
             <button type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-language" aria-hidden="true"></i> {{
-              _('Edit in') }}</button>
+              _('Редактировать') }}</button>
             <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             </button>
@@ -44,7 +44,8 @@
               {%- endfor -%}
             </div>
           </div>
-          <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-floppy-o" aria-hidden="true"></i> {{ _('Save')
+          <button class="btn btn-sm btn-primary" type="submit"><i class="fa
+          fa-floppy-o" aria-hidden="true"></i> {{ _('Сохранить')
             }}</button>
           {%- endif -%}
         </div>

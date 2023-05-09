@@ -22,7 +22,7 @@ from flask_babelex import gettext as _
 from werkzeug.utils import secure_filename
 
 from .api import Processor, current_wiki, get_wiki
-from .forms import EditorForm
+from .forms import EditorForm, NewPageForm
 
 blueprint = Blueprint(
     'wiki',
@@ -134,6 +134,9 @@ def page(url):
 @can_edit_permission
 def edit(url):
     page = current_wiki.get(url)
+    #
+    print(page)
+    #
     form = EditorForm(obj=page)
     if form.validate_on_submit():
         if not page:
@@ -227,8 +230,11 @@ def forbidden(error):
         current_app.config.get('WIKI_FORBIDDEN_TEMPLATE')), 403
 
 
-@blueprint.route('/create_page')
+@blueprint.route('/create_page', methods=['GET', 'POST'])
 @can_read_permission
 def create_page():
-    pages = current_wiki.pages()
-    return render_template('wiki/create_page.html', pages=pages)
+    if request.method == 'GET':
+        return render_template('wiki/create_page.html')
+    elif request.method == 'POST':
+        form = NewPageForm(obj=request.args)
+        pass
