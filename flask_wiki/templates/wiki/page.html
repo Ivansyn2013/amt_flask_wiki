@@ -22,11 +22,11 @@
                 <button data-name="{{ page.title }}"
                         data-link="{{ url_for('wiki.page', url=page.url) }}"
                         class="copy-file-code btn btn-sm btn-outline-primary">
-                    <i class="fa fa-clipboard"></i> {{ _('Copy link') }}
+                    <i class="fa fa-clipboard"></i> {{ _('Копировать ссылку') }}
                 </button>
                 <a type="button" class="btn btn-outline-primary btn-sm"
                    href="{{ url_for('wiki.edit', url=page.url) }}">
-                   <i class="fa fa-pencil"></i> {{ _('Edit') }}
+                   <i class="fa fa-pencil"></i> {{ _('Редактировать') }}
                 </a>
             </div>
             {% endif %}
@@ -40,7 +40,7 @@
             </ul>
             {% endif %}
             <div class="text-muted small">
-                <span>{{ _('Last updated:')}} {{ page.modification_datetime | date_format }}</span>
+                <span>{{ _('Последнее обновление:')}} {{ page.modification_datetime | date_format }}</span>
             </div>
             </footer>
         </header>
@@ -51,7 +51,7 @@
     <aside class="col-md-3">
         <div class="toc sticky-top pt-3">
             {% if page.toc %}
-            <h5>{{ _('Table of contents') }}</h5>
+            <h5>{{ _('Содержание') }}</h5>
             {{ page.toc }}
             {% endif %}
         </div>

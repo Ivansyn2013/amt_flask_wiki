@@ -1,11 +1,9 @@
 
-{% extends config.get('WIKI_BASE_TEMPLATE') %}
+{% extends 'wiki/base.html' %}
 {% block title -%}
 Создать страницу
 {% endblock title %}
 
-{% block navigation %}
-{% endblock %}
 
 {% block content %}
   <div id="sidebar">
@@ -21,12 +19,12 @@
 <div class="row mt-4 wiki-page">
   <div class="col-md-7 offset-md-2">
       <h1>{{ _('Создать страницу') }}</h1>
-      <p>{{ _('Выбери название раздела') }}</p>
+
       <p>
       <form id="new_page_form" class="form-group" method="post"
             action="{{ url_for('wiki.edit', url='DEFAULT_VALUE') }}">
 
-        <label  class="form-label">Введи раздел</label>
+        <label  class="form-label">Введи название</label>
 
         <input name="my_input" type="text" class="input-group form-control">
 
