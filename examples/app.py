@@ -26,7 +26,9 @@ def create_app(test_config=None):
         WIKI_LANGUAGES=['en', 'fr', 'de', 'it'],
         # BABEL_TRANSLATION_DIRECTORIES = resource_filename('flask_wiki', 'translations'),
         BABEL_DEFAULT_LOCALE='en',
-        DEBUG=True
+        DEBUG=True,
+        PORT=5003,
+
     )
     if test_config is None:
         # load the instance config, if it exists, when not testing

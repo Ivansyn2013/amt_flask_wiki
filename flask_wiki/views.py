@@ -238,3 +238,11 @@ def create_page():
     elif request.method == 'POST':
         form = NewPageForm(obj=request.args)
         pass
+
+@blueprint.route('/list_pages', methods=['GET'])
+@can_read_permission
+def list_pages():
+    r = current_wiki
+    print(r.index())
+    list_pages = r.index()
+    return render_template('wiki/list_pages.html', list_pages=list_pages)

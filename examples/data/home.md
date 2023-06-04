@@ -1,4 +1,4 @@
-title: Demo
+title: Пример создания страницы
 tags: demo, test
 
 Next page: [next](./next)
