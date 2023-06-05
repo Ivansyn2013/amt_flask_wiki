@@ -1,5 +1,4 @@
 FROM python:3.10-buster
-LABEL name=app_amt_wiki_image
 WORKDIR /app
 COPY . /app/
 RUN pip install poetry
