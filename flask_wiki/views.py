@@ -246,3 +246,11 @@ def list_pages():
     print(r.index())
     list_pages = r.index()
     return render_template('wiki/list_pages.html', list_pages=list_pages)
+
+@blueprint.route('/video', methods=['GET'])
+@can_read_permission
+def video_player():
+    r = current_wiki
+    print(r.index())
+    return render_template('wiki/video_play.html', page=[])
+

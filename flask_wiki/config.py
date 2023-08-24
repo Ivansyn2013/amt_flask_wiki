@@ -25,7 +25,7 @@ WIKI_PAGE_TEMPLATE = 'wiki/page.html'
 # MISCS
 # =====
 WIKI_HOME = 'home'
-WIKI_CURRENT_LANGUAGE = lambda: 'en'
+WIKI_CURRENT_LANGUAGE = lambda: 'ru'
 WIKI_LANGUAGES = ['ru']
 WIKI_URL_PREFIX = '/wiki'
 WIKI_CONTENT_DIR = './data'

@@ -1,0 +1,40 @@
+{% extends config.get('WIKI_BASE_TEMPLATE') %}
+{% set active_page = "page" %}
+
+{% block content %}
+{{ super() }}
+<main class="row mt-4 wiki-page">
+    <div class="col-md-7 offset-md-2">
+        <header class="d-flex flex-column justify-content-lg-between mb-4 pb-2 border-bottom">
+            <header class="wiki-page-header d-flex flex-column flex-lg-row justify-content-lg-between mb-2 mb-lg-0">
+            <h1 class="wiki-page-title mb-0">{{page.title}}</h1>
+            </header>
+
+
+            <footer class="wiki-page-info d-flex flex-column flex-lg-row justify-content-lg-between">
+            {% if page.tags %}
+            <ul class="wiki-page-tags m-0 p-0">
+                {% for tag in page.tags.split(',') %}
+                <li class="badge badge-primary">{{ tag }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="text-muted small">
+            </div>
+            </footer>
+        </header>
+        <article class="content">
+        {{ page }}
+          {% include "includes/video_player.html" %}
+        </article>
+    </div>
+    <aside class="col-md-3">
+        <div class="toc sticky-top pt-3">
+            {% if page.toc %}
+            <h5>{{ _('Содержание') }}</h5>
+            {{ page.toc }}
+            {% endif %}
+        </div>
+    </aside>
+</main>
+{% endblock %}

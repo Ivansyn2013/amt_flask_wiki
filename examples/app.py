@@ -13,19 +13,21 @@ from flask_babelex import Babel, Domain
 from flask_babelex import gettext as _
 from flask_bootstrap import Bootstrap4
 from pkg_resources import resource_filename
-
+from db.init_db import db
+from security import flask_crypt
+from flask_wiki.auth.views import login_manager
 from flask_wiki import Wiki
-
+from db.db_config import Develop
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        WIKI_CURRENT_LANGUAGE=lambda: session.get('ln', 'fr'),
-        WIKI_LANGUAGES=['en', 'fr', 'de', 'it'],
+        WIKI_CURRENT_LANGUAGE=lambda: session.get('ru'),
+        WIKI_LANGUAGES=['ru'],
         # BABEL_TRANSLATION_DIRECTORIES = resource_filename('flask_wiki', 'translations'),
-        BABEL_DEFAULT_LOCALE='en',
+        BABEL_DEFAULT_LOCALE='ru',
         DEBUG=True,
         PORT=5003,
 
@@ -33,11 +35,16 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
+        app.config.from_object(Develop)
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
     Bootstrap4(app)
     Wiki(app)
+    #data base
+    db.init_app(app)
+    flask_crypt.init_app(app)
+    login_manager.init_app(app)
     # use the flask-wiki translations
     domain = Domain(resource_filename('flask_wiki', 'translations'))
     babel = Babel(app, default_domain=domain)

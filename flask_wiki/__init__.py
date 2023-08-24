@@ -14,6 +14,10 @@ import os
 from .views import blueprint
 from werkzeug.middleware.shared_data import SharedDataMiddleware
 from . import config
+from flask_migrate import Migrate
+from flask_wiki.auth.views import user_auth
+from db.commands.commands import cli_commands
+from db.init_db import db
 
 
 class Wiki(object):
@@ -29,6 +33,12 @@ class Wiki(object):
             blueprint,
             url_prefix=app.config.get('WIKI_URL_PREFIX')
         )
+        app.register_blueprint(
+            user_auth,
+        )
+        app.register_blueprint(
+            cli_commands,
+        )
         app.add_url_rule(
             app.config.get('WIKI_URL_PREFIX') + '/files/<filename>',
             'uploaded_files', build_only=True)
@@ -36,6 +46,8 @@ class Wiki(object):
         app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {app.config.get(
             'WIKI_URL_PREFIX') + '/files': app.config['WIKI_UPLOAD_FOLDER']})
         app.extensions['flask-wiki'] = self
+
+        migrate = Migrate(app, db, compare_type=True)
 
     def init_config(self, app):
         """Initialize configuration."""
