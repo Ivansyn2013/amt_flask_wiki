@@ -13,6 +13,7 @@ import glob
 import os
 from datetime import datetime
 from functools import wraps
+from flask_login import current_user
 
 from babel import Locale
 from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
@@ -105,6 +106,11 @@ def permission_processor():
 @blueprint.before_request
 def setWiki():
     get_wiki()
+
+@blueprint.before_request
+def check_auth():
+    if not current_user.is_authenticated and request.endpoint != 'login':
+        return redirect(url_for('user_auth.login'))
 
 
 def allowed_file(filename):

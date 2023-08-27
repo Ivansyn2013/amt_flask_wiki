@@ -6,30 +6,36 @@ from security import flask_crypt
 from uuid import uuid4
 
 
-class User(UserMixin):
-    class User(db.Model, UserMixin):
-        _id = Column(UUID, primary_key=True, default=uuid4())
-        first_name = Column(String(80), unique=False, nullable=False, default="",
-                            server_default="")
-        last_name = Column(String(80), unique=False, nullable=False, default="",
-                           server_default="")
-        login = Column(String(80), unique=False, nullable=False, default="",
+def _uuid_to_str():
+    return str(uuid4())
+class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+
+    _id = Column(String, primary_key=True, default=_uuid_to_str)
+    first_name = Column(String(80), unique=False, nullable=False, default="",
+                        server_default="")
+    last_name = Column(String(80), unique=False, nullable=False, default="",
                        server_default="")
-        is_staff = Column(Boolean, nullable=False, default=False)
-        is_validated = Column(Boolean, nullable=False, default=False)
-        _password = Column(LargeBinary, nullable=True)
-        email = Column(String(255), nullable=False, default="", server_default="")
+    login = Column(String(80), unique=True, nullable=False, default="",
+                   server_default="")
+    is_staff = Column(Boolean, nullable=False, default=False)
+    is_validated = Column(Boolean, nullable=False, default=False)
+    _password = Column(LargeBinary, nullable=True)
+    email = Column(String(255), nullable=False, default="", server_default="")
 
-        @property
-        def password(self):
-            return self._password
+    @property
+    def password(self):
+        return self._password
 
-        @password.setter
-        def password(self, value):
-            self._password = flask_crypt.generate_password_hash(value)
+    @password.setter
+    def password(self, value):
+        self._password = flask_crypt.generate_password_hash(value)
 
-        def validate_password(self, password) -> bool:
-            return flask_crypt.check_password_hash(self._password, password)
+    def validate_password(self, password) -> bool:
+        return flask_crypt.check_password_hash(self._password, password)
 
-        def __repr__(self):
-            return f"< User {self.id} {self.first_name!r} {self.last_name}>"
+    def get_id(self):
+        return self._id
+
+    def __repr__(self):
+        return f" Работает {self.first_name!r} "

@@ -1,0 +1,1 @@
+from flask_wiki.auth.forms.forms import RegistrationForm

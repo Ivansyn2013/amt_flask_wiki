@@ -23,6 +23,7 @@ python-dotenv = "^1.0.0"
 flask-bcrypt = "^1.0.1"
 alembic = "^1.11.3"
 flask-migrate = "^4.0.4"
+email-validator = "^2.0.0.post2"
 
 [tool.poetry.dev-dependencies]
 check-manifest = "*"
