@@ -30,7 +30,7 @@ WIKI_LANGUAGES = ['ru']
 WIKI_URL_PREFIX = '/wiki'
 WIKI_CONTENT_DIR = './data'
 WIKI_UPLOAD_FOLDER = os.path.join(WIKI_CONTENT_DIR, 'files')
-WIKI_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
+WIKI_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'mp4'}
 
 """Markdown Extensions.
 
@@ -53,3 +53,5 @@ WIKI_EDIT_VIEW_PERMISSION = lambda: True
 WIKI_READ_VIEW_PERMISSION = lambda: True
 WIKI_EDIT_UI_PERMISSION = WIKI_EDIT_VIEW_PERMISSION
 WIKI_READ_UI_PERMISSION = WIKI_READ_VIEW_PERMISSION
+
+

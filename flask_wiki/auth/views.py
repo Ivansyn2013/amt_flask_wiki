@@ -5,13 +5,15 @@ from flask import (
     redirect,
     request,
     current_app,
-    url_for,
+    url_for, flash,
 )
 from flask_login import user_unauthorized, LoginManager, current_user, login_user, logout_user, login_required
 from flask_wiki.models import User
 from flask_wiki.auth.forms import RegistrationForm
 from db.init_db import db
 from sqlalchemy.exc import IntegrityError
+from flask_wiki.auth.forms import LoginForm
+
 
 user_auth = Blueprint('user_auth',
                       __name__,
@@ -34,19 +36,22 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('wiki.index'))
 
-    form = request.form
+    form = LoginForm(request.form)
 
     if request.method == "POST" and form.validate_on_submit():
         user = User.query.filter_by(
-            first_name=form.first_name.data).one_or_none()
+            email=form.email.data).one_or_none()
         if user is None:
+            flash(f"Такой пользователь не найден", "error")
             return render_template("auth/login.html", form=form,
                                    error="User name doen't exist")
         if not user.validate_password(form.password.data):
+            flash(f"Неверный пароль", "error")
             return render_template("auth/login.html", form=form,
                                    error="invalid user name or password")
 
         login_user(user)
+        flash(f"Добро пожаловать {user.first_name}", "success")
         return redirect(url_for('wiki.index'))
     return render_template("auth/login.html", form=form)
 
@@ -84,6 +89,7 @@ def registration():
         else:
             current_app.logger.info(f'Create user {user}')
             login_user(user)
+            flash(f"Пользователь {user.first_name} успешно зарегистирован", "info")
             return redirect(url_for('wiki.index'))
     return render_template('auth/registration.html', form=form, error=error)
 
@@ -97,6 +103,7 @@ def user_show():
 @login_required
 def logout():
     logout_user()
+    flash("Пользователь вышел", "success")
     return redirect(url_for("user_auth.login"))
 
 @login_manager.user_loader

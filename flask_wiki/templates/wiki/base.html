@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.16.1/dist/easymde.min.css">
   {% endblock %}
 
-  <title>{{ _('Flask-Wiki') }}</title>
+  <title> АТМ-база знаний</title>
   {% endblock %}
 </head>
 
@@ -37,6 +37,7 @@
     <a class="navbar-brand" href="{{ url_for('wiki.index') }}">{{ _('AMT-Wiki')
         }}</a>
   </nav>
+
 
   <div class="container-fluid py-4">
     {{ render_messages(dismissible=True, dismiss_animate=True) }}

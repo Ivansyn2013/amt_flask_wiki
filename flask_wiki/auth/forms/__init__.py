@@ -1,1 +1,1 @@
-from flask_wiki.auth.forms.forms import RegistrationForm
+from flask_wiki.auth.forms.forms import RegistrationForm, LoginForm

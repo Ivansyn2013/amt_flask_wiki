@@ -18,6 +18,10 @@ from security import flask_crypt
 from flask_wiki.auth.views import login_manager
 from flask_wiki import Wiki
 from db.db_config import Develop
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from flask_wiki.admin import MyAdminView
+from flask_wiki.models.user import User
 
 def create_app(test_config=None):
     # create and configure the app
@@ -48,6 +52,10 @@ def create_app(test_config=None):
     # use the flask-wiki translations
     domain = Domain(resource_filename('flask_wiki', 'translations'))
     babel = Babel(app, default_domain=domain)
+    #flask-admin
+    #app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+    admin = Admin(app, name='amt_wiki', template_mode='bootstrap3')
+    admin.add_view(MyAdminView(User, db.session))
 
     @babel.localeselector
     def get_locale():
