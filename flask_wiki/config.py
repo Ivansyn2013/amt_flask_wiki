@@ -29,6 +29,7 @@ WIKI_CURRENT_LANGUAGE = lambda: 'ru'
 WIKI_LANGUAGES = ['ru']
 WIKI_URL_PREFIX = '/wiki'
 WIKI_CONTENT_DIR = './data'
+WIKI_MEDIA_DIR = os.path.join(WIKI_CONTENT_DIR, 'media')
 WIKI_UPLOAD_FOLDER = os.path.join(WIKI_CONTENT_DIR, 'files')
 WIKI_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'mp4'}
 

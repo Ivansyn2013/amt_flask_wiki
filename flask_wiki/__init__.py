@@ -43,6 +43,12 @@ class Wiki(object):
             app.config.get('WIKI_URL_PREFIX') + '/files/<filename>',
             'uploaded_files', build_only=True)
 
+        #video
+        app.add_url_rule(
+            app.config.get('WIKI_URL_PREFIX') + '/files/<filename>',
+            'uploaded_video', build_only=True)
+
+
         app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {app.config.get(
             'WIKI_URL_PREFIX') + '/files': app.config['WIKI_UPLOAD_FOLDER']})
         app.extensions['flask-wiki'] = self

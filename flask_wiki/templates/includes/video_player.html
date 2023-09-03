@@ -1,5 +1,7 @@
 
     <video width="640" height="480" controls>
-        <source src="{{ url_for('static', filename='videos/video.mp4') }}" type="video/mp4">
+      {% for file in videos %}
+        <source src="{{ url_for("uploaded_video", filename=file) }}" type="video/mp4">
         Your browser does not support the video tag.
+      {% endfor %}
     </video>

@@ -52,7 +52,8 @@ def can_edit_permission(func):
     """Check Edition Permission."""
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        permission = current_app.config.get('WIKI_EDIT_VIEW_PERMISSION')()
+        #permission = current_app.config.get('WIKI_EDIT_VIEW_PERMISSION')()
+        permission = current_user.is_authenticated and current_user.is_staff
         if isinstance(permission, bool):
             if not permission:
                 abort(403)
@@ -109,9 +110,13 @@ def setWiki():
 
 @blueprint.before_request
 def check_auth():
-    if not current_user.is_authenticated and request.endpoint != 'login':
+    if (not current_user.is_authenticated and request.endpoint != 'login'):
+        flash("Доступ ограничен только для зарегистрированных пользователей")
         return redirect(url_for('user_auth.login'))
-
+    if all((current_user.is_authenticated, not current_user.is_validated, request.endpoint != 'login',
+            request.endpoint != '')):
+        flash("Данный пользователь требует подтверждения администратора", 'warning')
+        return redirect(url_for('user_auth.login'))
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = current_app.config.get('WIKI_ALLOWED_EXTENSIONS')
@@ -258,5 +263,7 @@ def list_pages():
 def video_player():
     r = current_wiki
     print(r.index())
-    return render_template('wiki/video_play.html', page=[])
+    videos = [os.path.basename(f) for f in sorted(glob.glob(
+        '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*'])), key=os.path.getmtime)]
+    return render_template('wiki/video_play.html', page=[], videos=videos)
 

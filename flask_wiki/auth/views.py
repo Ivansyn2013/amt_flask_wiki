@@ -33,7 +33,7 @@ def get_user(user):
 
 @user_auth.route('/', methods =['POST', "GET"], endpoint='login')
 def login():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated and current_user.is_validated:
         return redirect(url_for('wiki.index'))
 
     form = LoginForm(request.form)

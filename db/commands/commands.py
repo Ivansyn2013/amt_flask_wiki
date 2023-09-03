@@ -24,7 +24,7 @@ def create_user():
     > Created admin: user
     '''
 
-    admin = User(first_name='admin', is_staff=True, login='admin', is_validated=True, email='q@q.ru')
+    admin = User(first_name='admin', is_staff=True, login='admin', is_validated=True, email='q@q.ru', is_admin=True)
     admin.password = os.getenv('FLASK_ADMIN_PASSWORD') or '123'
     db.session.add(admin)
     db.session.commit()
