@@ -43,6 +43,7 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
+
     Bootstrap4(app)
     Wiki(app)
     #data base

@@ -20,8 +20,10 @@ class User(db.Model, UserMixin):
                    server_default="")
     is_staff = Column(Boolean, nullable=False, default=False)
     is_validated = Column(Boolean, nullable=False, default=False)
-    _password = Column(LargeBinary, nullable=True)
+    #исправить
+    _password = Column(LargeBinary, nullable=False, default=flask_crypt.generate_password_hash('123'))
     email = Column(String(255), nullable=False, default="", server_default="")
+    role = Column(String(200), nullable=True, default="", server_default="")
 
     @property
     def password(self):

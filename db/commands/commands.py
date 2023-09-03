@@ -4,6 +4,7 @@ from db.init_db import db
 import os
 from flask_wiki.models import User
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import text
 
 
 cli_commands = Blueprint('cli_commands', __name__)
@@ -13,7 +14,6 @@ def init_db():
     '''
     command for init flask db
     '''
-    #db.drop_all()
     db.create_all()
     print('Db is inited')
 
@@ -24,7 +24,7 @@ def create_user():
     > Created admin: user
     '''
 
-    admin = User(first_name='admin1', is_staff=True, login='admin')
+    admin = User(first_name='admin', is_staff=True, login='admin', is_validated=True, email='q@q.ru')
     admin.password = os.getenv('FLASK_ADMIN_PASSWORD') or '123'
     db.session.add(admin)
     db.session.commit()
@@ -33,12 +33,14 @@ def create_user():
 @cli_commands.cli.command("drop-db")
 def drop_db():
     '''
-    command for init flask db
+    command for drop flask db
     '''
     try:
+        db.reflect()
         db.drop_all()
+        with db.engine.connect() as connection:
+            connection.execute(text("DROP TABLE IF EXISTS alembic_version;"))
 
-        db.engine.execute("DROP TABLE alembic_version")
         print('Db is droped')
     except IntegrityError as error:
         print(f'Error {error}')
