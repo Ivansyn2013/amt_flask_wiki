@@ -34,7 +34,7 @@
             {% for file in videos %}
               <li class="media">
                 <a id="video_el" class="pull-left" onclick="videoUrl('{{ url_for("uploaded_video", filename=file) }}')">
-                  Название видео
+                  {{ file.split(".")[0] }}
                 </a>
               </li>
             {% endfor %}
