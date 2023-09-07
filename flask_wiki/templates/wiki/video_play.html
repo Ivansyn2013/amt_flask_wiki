@@ -24,17 +24,37 @@
             </footer>
         </header>
         <article class="content">
-        {{ page }}
+{#        {{ page }}#}
           {% include "includes/video_player.html" %}
         </article>
     </div>
     <aside class="col-md-3">
         <div class="toc sticky-top pt-3">
-            {% if page.toc %}
-            <h5>{{ _('Содержание') }}</h5>
-            {{ page.toc }}
-            {% endif %}
+          <ul class="media-list">
+            {% for file in videos %}
+              <li class="media">
+                <a id="video_el" class="pull-left" onclick="videoUrl('{{ url_for("uploaded_video", filename=file) }}')">
+                  Название видео
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
         </div>
     </aside>
 </main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+  let video = document.querySelector("video");
+  function videoUrl(url, event) {
+      console.log("videoURL");
+      video.pause();
+      const video_source = video.querySelector("source");
+      video_source.setAttribute('src', url);
+      video.load();
+      video.play();
+  }
+</script>
 {% endblock %}

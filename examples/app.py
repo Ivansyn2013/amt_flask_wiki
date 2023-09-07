@@ -28,7 +28,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        WIKI_CURRENT_LANGUAGE=lambda: session.get('ru'),
+        WIKI_CURRENT_LANGUAGE=lambda: session.get('ln', 'ru'),
         WIKI_LANGUAGES=['ru'],
         # BABEL_TRANSLATION_DIRECTORIES = resource_filename('flask_wiki', 'translations'),
         BABEL_DEFAULT_LOCALE='ru',

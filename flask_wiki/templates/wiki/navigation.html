@@ -17,15 +17,19 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('wiki.index') }}">{{ _('Главная') }}</a>
             </li>
-            {% if can_edit_wiki %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('wiki.files') }}">{{ _('Файлы') }}</a>
-            </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('wiki.create_page') }}">
-                  {{ _('Создать страницу') }}</a>
-            </li>
+            {% if current_user.is_staff %}
+
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('wiki.files') }}">{{ _('Файлы') }}</a>
+              </li>
+
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('wiki.create_page') }}">
+                    {{ _('Создать страницу') }}</a>
+              </li>
+
+            {% endif %}
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('wiki.list_pages') }}">
@@ -41,7 +45,7 @@
                 <a class="nav-link link-dark" href="{{ url_for('user_auth.logout') }}">
                   {{ current_user }}</a>
               </li>
-            {% endif %}
+
         </ul>
         <form class="form-inline" action="{{ url_for('wiki.search') }}">
             <div class="input-group">
