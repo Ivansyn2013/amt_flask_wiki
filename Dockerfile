@@ -11,4 +11,6 @@ RUN apt-get update \
 RUN flask db init
 RUN flask db migrate
 RUN flask db upgrade
+RUN flask cli_commands init-db
+RUN flask cli_commands create-admin
 CMD ["gunicorn", "wsgi:app", "-b", "0.0.0.0:5006"]

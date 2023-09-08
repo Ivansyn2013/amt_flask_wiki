@@ -20,6 +20,7 @@ services:
       - ".env"
     volumes:
       - "/home/amt_user/amt_wiki/data:/app/data"
+      - "/home/amt_user/amt_wiki/data/migrations:/app/migrations"
     ports:
     - "5006:5006"
 
