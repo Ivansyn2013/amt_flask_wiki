@@ -8,9 +8,4 @@ COPY . /app/
 RUN apt-get update \
     && apt-get -y install libpq-dev gcc \
     && pip install psycopg2
-RUN flask db init
-RUN flask db migrate
-RUN flask db upgrade
-RUN flask cli_commands init-db
-RUN flask cli_commands create-admin
-CMD ["gunicorn", "wsgi:app", "-b", "0.0.0.0:5006"]
+CMD ["gunicorn", "--workers=4", "wsgi:app", "-b", "0.0.0.0:5006"]
