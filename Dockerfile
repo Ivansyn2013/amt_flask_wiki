@@ -6,4 +6,6 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false && poetry install \
     --no-interaction --no-ansi
 RUN pip install gunicorn
-CMD ["gunicorn", "wsgi:app", "-b", "0.0.0.0:5005"]
+RUN flask db migrate
+RUN flask db upgrade
+CMD ["gunicorn", "wsgi:app", "-b", "0.0.0.0:5006"]
