@@ -7,7 +7,8 @@ COPY . /app/
 #RUN pip install gunicorn
 RUN apt-get update \
     && apt-get -y install libpq-dev gcc \
-    && pip install psycopg2
+    && pip install psycopg2 \
+RUN flask db init
 RUN flask db migrate
 RUN flask db upgrade
 CMD ["gunicorn", "wsgi:app", "-b", "0.0.0.0:5006"]
