@@ -60,7 +60,8 @@ def create_app(test_config=None):
     babel = Babel(app, default_domain=domain)
     #flask-admin
     #app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-    admin = Admin(app, name='amt_wiki', template_mode='bootstrap3')
+    admin = Admin(app, name='amt_wiki', template_mode='bootstrap3', static_url_path='/admin/static',
+                  static_folder='admin/static')
     admin.add_view(MyAdminView(User, db.session))
 
     @babel.localeselector
