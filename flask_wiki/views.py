@@ -264,6 +264,6 @@ def video_player():
     r = current_wiki
     #print(r.index())
     videos = [os.path.basename(f) for f in sorted(glob.glob(
-        '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*'])), key=os.path.getmtime)]
+        '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*.mp4'])), key=os.path.getmtime)]
     return render_template('wiki/video_play.html', page=[], videos=videos)
 
