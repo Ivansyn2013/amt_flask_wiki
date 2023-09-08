@@ -13,7 +13,7 @@ services:
 
   app_amt_wiki_ver2:
     build:
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
       context: .
     container_name: amt_wiki_ver2
     env_file:
@@ -21,5 +21,5 @@ services:
     volumes:
       - "/home/amt_user/amt_wiki/data:/app/data"
     ports:
-    - "5005:5005"
+    - "5006:5006"
 

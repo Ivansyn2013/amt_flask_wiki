@@ -40,13 +40,13 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
-        app.config.from_object(Develop)
+        app.config.from_object(Deploy)
     else:
         # load the test config if passed in
         app.config.from_pyfile('config.py', silent=True)
         # name of var with env path
         app.config.from_object(Deploy)
-        app.config.from_envvar(test_config)
+        #app.config.from_envvar(test_config)
         print(app.config)
 
     Bootstrap4(app)
