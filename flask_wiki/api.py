@@ -49,6 +49,7 @@ from flask import abort, current_app, g, url_for
 from werkzeug.local import LocalProxy
 
 from .markdown_ext import BootstrapExtension
+from .models.page import PageDb
 from .utils import clean_url, wikilink
 
 
@@ -200,9 +201,11 @@ class Page(object):
                 f.write(line)
             f.write(u'\n')
             f.write(self.body.replace(u'\r\n', u'\n'))
+
         if update:
             self.load()
             self.render()
+        current_app.logger.info("Страница сохранена в базе" if PageDb.save_in_db(self) else "Ошибка сохранения в базе")
 
     @property
     def meta(self):

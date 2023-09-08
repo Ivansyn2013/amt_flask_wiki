@@ -11,3 +11,19 @@ class Develop(DbConfig):
     # Flask-admin
     # =============
     FLASK_ADMIN_SWATCH = 'cerulean'
+
+class Deploy(DbConfig):
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+    PGUSER = os.environ.get("PGUSER")
+    PGPASSWORD = os.environ.get("PGPASSWORD")
+    PGHOST = os.environ.get("PGHOST")
+    PGDB = os.environ.get('PGDB')
+
+    TESTING = False
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}/{PGDB}'
+    SQLALCHEMY_MODIFICATIONS = False
+    SECRET_KEY = os.environ.get('SECRET_KEY')

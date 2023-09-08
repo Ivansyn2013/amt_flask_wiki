@@ -146,7 +146,7 @@ def page(url):
 def edit(url):
     page = current_wiki.get(url)
     #
-    print(page)
+    # print(page)
     #
     form = EditorForm(obj=page)
     if form.validate_on_submit():
@@ -262,7 +262,7 @@ def list_pages():
 @can_read_permission
 def video_player():
     r = current_wiki
-    print(r.index())
+    #print(r.index())
     videos = [os.path.basename(f) for f in sorted(glob.glob(
         '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*'])), key=os.path.getmtime)]
     return render_template('wiki/video_play.html', page=[], videos=videos)

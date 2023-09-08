@@ -7,6 +7,7 @@
 # more details.
 
 """Simple Testing applications."""
+import os
 
 from flask import Flask, current_app, g, redirect, request, session, url_for
 from flask_babelex import Babel, Domain
@@ -17,7 +18,7 @@ from db.init_db import db
 from security import flask_crypt
 from flask_wiki.auth.views import login_manager
 from flask_wiki import Wiki
-from db.db_config import Develop
+from db.db_config import Develop, Deploy
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_wiki.admin import MyAdminView
@@ -42,7 +43,11 @@ def create_app(test_config=None):
         app.config.from_object(Develop)
     else:
         # load the test config if passed in
-        app.config.from_mapping(test_config)
+        app.config.from_pyfile('config.py', silent=True)
+        # name of var with env path
+        app.config.from_object(Deploy)
+        app.config.from_envvar(test_config)
+        print(app.config)
 
     Bootstrap4(app)
     Wiki(app)
@@ -72,5 +77,8 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-
-app = create_app()
+# set path to config env file
+#только для деплоя
+dep_config = os.getenv('ENV_PATH')
+app = create_app(dep_config)
+####
