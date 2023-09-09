@@ -76,4 +76,4 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-app = create_app()
+app = create_app(True)
