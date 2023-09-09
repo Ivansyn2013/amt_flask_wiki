@@ -28,3 +28,4 @@ class Deploy(DbConfig):
     SQLALCHEMY_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
     PORT = os.environ.get("PORT")
+    FLASK_ADMIN_SWATCH = 'cerulean'
