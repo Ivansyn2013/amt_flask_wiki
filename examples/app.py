@@ -40,13 +40,13 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
-        app.config.from_object(Deploy)
+        app.config.from_object(Develop)
     else:
         # load the test config if passed in
         app.config.from_pyfile('config.py', silent=True)
         # name of var with env path
         app.config.from_object(Deploy)
-        print(app.config)
+        #print(app.config)
 
     Bootstrap4(app)
     Wiki(app)
@@ -76,4 +76,4 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-app = create_app(True)
+app = create_app()
