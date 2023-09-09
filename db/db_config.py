@@ -27,3 +27,4 @@ class Deploy(DbConfig):
     SQLALCHEMY_DATABASE_URI = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}/{PGDB}'
     SQLALCHEMY_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    PORT = os.environ.get("PORT")

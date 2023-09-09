@@ -1,5 +1,6 @@
 from examples.app import app
+from db.db_config import Develop, Deploy
 
 if __name__ == '__main__':
-    app.run(debug=False,
-            port=5006,)
+    app.config.from_object(Deploy)
+    app.run()

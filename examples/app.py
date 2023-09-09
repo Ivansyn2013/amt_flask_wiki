@@ -40,13 +40,12 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
-        app.config.from_object(Deploy)
+        app.config.from_object(Develop)
     else:
         # load the test config if passed in
         app.config.from_pyfile('config.py', silent=True)
         # name of var with env path
         app.config.from_object(Deploy)
-        #app.config.from_envvar(test_config)
         print(app.config)
 
     Bootstrap4(app)
@@ -60,7 +59,7 @@ def create_app(test_config=None):
     babel = Babel(app, default_domain=domain)
     #flask-admin
     #app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-    admin = Admin(app, name='amt_wiki', template_mode='bootstrap3', static_url_path='/admin/static')
+    admin = Admin(app, name='amt_wiki', template_mode='bootstrap3')
     admin.add_view(MyAdminView(User, db.session))
 
     @babel.localeselector
@@ -77,8 +76,4 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-# set path to config env file
-#только для деплоя
-dep_config = os.getenv('ENV_PATH')
-app = create_app(dep_config)
-####
+app = create_app()
