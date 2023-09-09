@@ -12,7 +12,7 @@ services:
       - app_amt_wiki_ver2
     networks:
       amt_wiki_net:
-        - ipv4_address: 172.17.0.3
+        ipv4_address: 172.17.0.3
 
   app_amt_wiki_ver2:
     build:
@@ -28,12 +28,14 @@ services:
     - "5006:5006"
     networks:
       amt_wiki_net:
-        - ipv4_address: 172.17.0.2
+        ipv4_address: 172.17.0.2
 
 
 networks:
   amt_wiki_net:
     driver: bridge
     ipam:
+      driver: default
       config:
-        - subnet: 172.17.0.0/16
+        - subnet: "172.17.0.0/16"
+        - gateway: "172.17.0.1"
