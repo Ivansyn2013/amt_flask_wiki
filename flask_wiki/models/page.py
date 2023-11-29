@@ -22,6 +22,9 @@ class PageDb(db.Model):
     toc = Column(String)
     meta = Column(String)
 
+    '''
+    images - list - foreign key many to many
+    videos - list - foreygn key'''
     #foreign keys
     creater =[]
 

@@ -253,6 +253,7 @@ def create_page():
 @blueprint.route('/list_pages', methods=['GET'])
 @can_read_permission
 def list_pages():
+    '''Функция рисует список страниц, можно передать что-нить через ревест и забрать по индексу'''
     r = current_wiki
     print(r.index())
     list_pages = r.index()
@@ -267,3 +268,13 @@ def video_player():
         '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*.mp4'])), key=os.path.getmtime)]
     return render_template('wiki/video_play.html', page=[], videos=videos)
 
+
+@blueprint.route('/list_pages_by_moduls', methods=['GET'])
+@can_read_permission
+def list_pages_by_moduls():
+
+    tag = 'Модуль'
+    r = current_wiki
+    print(r.index())
+    list_pages = r.index_by_tag(tag)
+    return render_template('wiki/list_pages.html', list_pages=list_pages)

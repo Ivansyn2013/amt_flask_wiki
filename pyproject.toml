@@ -1,9 +1,9 @@
 [tool.poetry]
 name = "flask-wiki"
 version = "0.2.4"
-description = "Simple file-based wiki for Flask"
+description = "Edited by titmouse Simple file-based wiki for Flask"
 readme = "README.md"
-authors = ["rero <info@rero.ch>"]
+authors = [""]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]
@@ -25,6 +25,7 @@ alembic = "^1.11.3"
 flask-migrate = "^4.0.4"
 email-validator = "^2.0.0.post2"
 flask-admin = "^1.6.1"
+psycopg2 = "^2.9.9"
 
 [tool.poetry.dev-dependencies]
 check-manifest = "*"
@@ -41,3 +42,5 @@ extract_messages = "pybabel extract --project Flask-Wiki -F babel.cfg -k gettext
 init_catalog = "pybabel init -i flask_wiki/translations/messages.pot -d flask_wiki/translations -l "
 compile_catalog = "pybabel compile -d flask_wiki/translations"
 update_catalog = "pybabel update -i flask_wiki/translations/messages.pot -d flask_wiki/translations"
+#[tool.poetry.virtualenvs]
+#in-project = true

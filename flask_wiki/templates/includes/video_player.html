@@ -1,5 +1,43 @@
-    <video width="640" height="480" controls>
+{#    <video width="640" height="480" controls>#}
 {#      {% for file in videos %}#}
-        <source src="" type="video/mp4">
+{#        <source src="" type="video/mp4">#}
 {#      {% endfor %}#}
-    </video>
+{#    </video>#}
+{##}
+
+{#вариант videojs#}
+  <video
+    id="myjs-video"
+    class="video-js vjs-theme-city"
+    controls
+    preload="auto"
+    width="640"
+    height="480"
+    poster=""
+  >
+    {% for file in videos  %}
+      <source src="files/{{ file }}" type="video/mp4">
+    {% endfor %}
+
+    <p class="vjs-no-js">
+      To view this video please enable JavaScript, and consider upgrading to a
+      web browser that
+      <a href="https://videojs.com/html5-video-support/" target="_blank"
+        >supports HTML5 video</a
+      >
+    </p>
+
+  </video>
+
+
+
+{#<script type="text/javascript">#}
+{#  let player = videojs('myjs-video');#}
+{#        player.playlist([     // Define the playlist array#}
+{#            {% for file in videos %}#}
+{#               { sources: [{ src: 'files/{{ file }}', type: 'video/mp4' }], title:#}
+{#                       'Video 1' },#}
+{#            // Add more videos to the playlist#}
+{#            {% endfor %}#}
+{#        ]);#}
+{#</script>#}

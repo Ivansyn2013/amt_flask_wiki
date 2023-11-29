@@ -1,6 +1,16 @@
 {% extends config.get('WIKI_BASE_TEMPLATE') %}
 {% set active_page = "page" %}
 
+{% block head %}
+  {{ super() }}
+  <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+  <link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+        rel="stylesheet"
+  />
+
+
+{% endblock %}
+
 {% block content %}
 {{ super() }}
 <main class="row mt-4 wiki-page">
@@ -57,4 +67,5 @@
       video.play();
   }
 </script>
+
 {% endblock %}

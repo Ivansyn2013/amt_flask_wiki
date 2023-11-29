@@ -12,7 +12,6 @@ Simple file based wiki for Flask.
 * [Poetry](https://python-poetry.org/)
 
 ### Install
-
 - Clone the git repository
 - run `poetry install`
 - If you want to enable debug mode, run `export FLASK_ENV=development`
