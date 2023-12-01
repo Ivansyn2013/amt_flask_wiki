@@ -47,6 +47,7 @@ services:
 
 networks:
   amt_education_net:
+    name: amt_education_net
     driver: bridge
     ipam:
       driver: default
