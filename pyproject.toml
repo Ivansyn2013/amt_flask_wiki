@@ -3,7 +3,7 @@ name = "flask-wiki"
 version = "0.2.4"
 description = "Edited by titmouse Simple file-based wiki for Flask"
 readme = "README.md"
-authors = [""]
+authors = ["John Smith <john@example.com>"]
 license = "BSD-3-Clause"
 
 [tool.poetry.dependencies]

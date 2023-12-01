@@ -16,6 +16,8 @@ services:
     depends_on:
       - certbot
       - app_amt_wiki_ver3
+    networks:
+      - amt_education_net
 
 
 
@@ -27,10 +29,12 @@ services:
     env_file:
       - ".env"
     volumes:
-      - "/home/amt_user/amt_wiki/data:/app/data"
-      - "/home/amt_user/amt_wiki/data/migrations:/app/migrations"
-    ports:
-    - "5006:5006"
+      - "/home/common_user/AMT_education_service/data:/app/data"
+    expose:
+    - "5006"
+    networks:
+      - amt_education_net
+
 
   certbot:
     image: certbot/certbot
@@ -38,4 +42,13 @@ services:
     volumes:
       - "./ssl/certbot/conf:/etc/letsencrypt"
       - "./ssl/certbot/www:/var/www/certbot"
+    networks:
+      - amt_education_net
 
+networks:
+  amt_education_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.17.0.0/16
