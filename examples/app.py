@@ -45,7 +45,7 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_pyfile('config.py', silent=True)
         # name of var with env path
-        app.config.from_object(Develop)
+        app.config.from_object(Deploy)
         #print(app.config)
 
     Bootstrap4(app)
@@ -76,4 +76,4 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-app = create_app()
+app = create_app(test_config='Deploy')
