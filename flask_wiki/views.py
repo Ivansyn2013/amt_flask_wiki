@@ -154,7 +154,7 @@ def edit(url):
             page = current_wiki.get_bare(url)
         form.populate_obj(page)
         page.save()
-        flash(_('Saved'), category='success')
+        flash(_('Сохранено'), category='success')
         return redirect(url_for('wiki.page', url=url))
     return render_template(
         current_app.config.get('WIKI_EDITOR_TEMPLATE'),
@@ -253,10 +253,15 @@ def create_page():
 @blueprint.route('/list_pages', methods=['GET'])
 @can_read_permission
 def list_pages():
-    '''Функция рисует список страниц, можно передать что-нить через ревест и забрать по индексу'''
+    '''Функция рисует список страниц, можно передать что-нить через ревест (request.args) и забрать по индексу'''
     r = current_wiki
-    print(r.index())
-    list_pages = r.index()
+
+    if 'page_tag' in request.args:
+        page_tag = request.args['page_tag']
+        list_pages = r.index_by_tag(page_tag)
+    else:
+        list_pages = r.index()
+
     return render_template('wiki/list_pages.html', list_pages=list_pages)
 
 @blueprint.route('/video', methods=['GET'])
@@ -273,7 +278,7 @@ def video_player():
 @can_read_permission
 def list_pages_by_moduls():
 
-    tag = 'Модуль'
+    tag = 'модуль'
     r = current_wiki
     print(r.index())
     list_pages = r.index_by_tag(tag)
