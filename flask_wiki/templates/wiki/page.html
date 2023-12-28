@@ -28,6 +28,27 @@
                    href="{{ url_for('wiki.edit', url=page.url) }}">
                    <i class="fa fa-pencil"></i> {{ _('Редактировать') }}
                 </a>
+
+                <form
+{#                    action="{{ url_for('user_auth.upload_files') }}"#}
+                    id="uploadForm"
+                    onsubmit="uploadFile(event)"
+                    method="post"
+                    enctype="multipart/form-data">
+                  <input
+                      class="form-control-sm"
+                      type="file"
+                      name="file" accept="video/*, .mp4">
+                  <button class="fa fa-film btn btn-outline-primary btn-sm"
+                          type="submit"
+{#                          onclick="uploadFile()"#}
+                  >{{ _('Прикрепить видео') }}</button>
+                </form>
+
+            <div id="progressBar" style="display: none;">
+              <div id="progressBarFill" style="width: 0%;"></div>
+            </div>
+
             </div>
             {% endif %}
             </header>
@@ -57,4 +78,8 @@
         </div>
     </aside>
 </main>
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/upload_video_func.js') }}"></script>
 {% endblock %}

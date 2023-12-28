@@ -5,7 +5,9 @@ from flask import (
     redirect,
     request,
     current_app,
-    url_for, flash,
+    url_for,
+    flash,
+    jsonify
 )
 from flask_login import user_unauthorized, LoginManager, current_user, login_user, logout_user, login_required
 from flask_wiki.models import User
@@ -13,6 +15,7 @@ from flask_wiki.auth.forms import RegistrationForm
 from db.init_db import db
 from sqlalchemy.exc import IntegrityError
 from flask_wiki.auth.forms import LoginForm
+from werkzeug.utils import secure_filename
 
 
 user_auth = Blueprint('user_auth',
@@ -113,3 +116,33 @@ def load_user(user_id):
 @login_manager.unauthorized_handler
 def unauthorized():
     return redirect(url_for("user_auth.login"))
+
+
+@user_auth.route("/upload_files/", methods=['POST'], endpoint="upload_files")
+@login_required
+def upload_files():
+    '''Функция для загрузуки виддео в хранилище'''
+    from flask_wiki.my_options import allowed_file, create_client, BUCKET
+
+    if 'file' not in request.files:
+        flash('Не найден фаил', 'warning')
+        return jsonify({'error': 'No file selected'}), 400
+
+    file = request.files['file']
+
+    if file.filename and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+
+        # Generate a presigned URL for S3 upload
+        s3 = create_client()
+        presigned_url = s3.generate_presigned_url(
+            'put_object',
+            Params={'Bucket': BUCKET, 'Key': filename},
+            ExpiresIn=360  # The URL will expire in 1 hour
+        )
+
+        flash('Создана ссылка', "success")
+        return jsonify({'succes': True,'presigned_url': presigned_url})
+
+
+    return jsonify({'error': 'Ошибка имени файла'})
