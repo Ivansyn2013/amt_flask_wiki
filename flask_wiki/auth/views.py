@@ -10,12 +10,17 @@ from flask import (
     jsonify
 )
 from flask_login import user_unauthorized, LoginManager, current_user, login_user, logout_user, login_required
+
+from flask_wiki.api import Page
 from flask_wiki.models import User
 from flask_wiki.auth.forms import RegistrationForm
 from db.init_db import db
 from sqlalchemy.exc import IntegrityError
 from flask_wiki.auth.forms import LoginForm
 from werkzeug.utils import secure_filename
+from logging import getLogger
+from urllib.parse import unquote # для декодированяи кириллицы
+from flask_wiki.models import PageDb, FilesUrls
 
 
 user_auth = Blueprint('user_auth',
@@ -27,6 +32,8 @@ user_auth = Blueprint('user_auth',
 login_manager = LoginManager()
 login_manager.login_view = "user_auth.login"
 login_manager.login_message = 'Привет'
+
+s3_logger = getLogger('s3_logger')
 
 
 @login_manager.user_loader
@@ -132,17 +139,42 @@ def upload_files():
 
     if file.filename and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-
+        page_name = request.headers['pagename']
+        decode_page_name = unquote(page_name, encoding='utf-8')
+        PATH = f'wiki_pages/{decode_page_name}/{filename}'
+        file_obj = request.files.get('file')
         # Generate a presigned URL for S3 upload
-        s3 = create_client()
-        presigned_url = s3.generate_presigned_url(
-            'put_object',
-            Params={'Bucket': BUCKET, 'Key': filename},
-            ExpiresIn=360  # The URL will expire in 1 hour
-        )
 
-        flash('Создана ссылка', "success")
-        return jsonify({'succes': True,'presigned_url': presigned_url})
+        s3 = create_client()
+        # создание ссылки для загрузки
+        # presigned_url = s3.generate_presigned_url(
+        #     'put_object',
+        #     Params={'Bucket': BUCKET, 'Key': filename},
+        #     ExpiresIn=360  # The URL will expire in 1 hour
+        # )
+
+        try:
+            s3.put_object(Bucket=BUCKET, Key=PATH, Body=file_obj)
+
+            flash('Создана ссылка', "success")
+            file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}' #полная ссылка
+
+            db_page = PageDb.query.filter_by(url=decode_page_name).first()
+            file_url_db = FilesUrls(file_name=filename, file_url=file_url)
+            db_page.file_url.append(file_url_db)
+            db.session.add(db_page)
+            db.session.commit()
+
+            s3_logger.info(f'Сохранен фаил в хранилище с именем {PATH} и ссылкой {file_url}')
+
+
+        except Exception as e:
+            print(e)
+            flash('Ошибка загрузки файла', "warning")
+            return jsonify({'success': False, 'error': str(e) })
+
+
+        return jsonify({'success': True})
 
 
     return jsonify({'error': 'Ошибка имени файла'})

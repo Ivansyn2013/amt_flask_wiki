@@ -10,7 +10,7 @@ class PageDb(db.Model):
 
     _id = Column(String, primary_key=True, default=_uuid_to_str)
 
-    title = Column(String)
+    title = Column(String, unique=True)
     html = Column(Text)
     tags = Column(String)
     create_date = Column(DateTime, default=datetime.now, server_default=func.now())
@@ -27,6 +27,7 @@ class PageDb(db.Model):
     videos - list - foreygn key'''
     #foreign keys
     creater =[]
+    file_url = db.relationship('FilesUrls', backref='page', lazy='dynamic')
 
     @staticmethod
     def save_in_db(page):

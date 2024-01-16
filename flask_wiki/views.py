@@ -24,6 +24,7 @@ from werkzeug.utils import secure_filename
 
 from .api import Processor, current_wiki, get_wiki
 from .forms import EditorForm, NewPageForm
+from flask_wiki.models import PageDb
 
 blueprint = Blueprint(
     'wiki',
@@ -136,9 +137,20 @@ def index():
 @can_read_permission
 def page(url):
     page = current_wiki.get_or_404(url)
+    try:
+        page_db = PageDb.query.filter_by(url=page.url).first()
+        files_urls = page_db.file_url.all()
+    except Exception as error:
+        current_app.logger.error(error)
+        if type(error) is not AttributeError:
+            flash('Ошибка подключения', 'error')
+        files_urls = None
+
     return render_template(
         current_app.config.get('WIKI_PAGE_TEMPLATE'),
-        page=page)
+        page=page,
+        files_urls=files_urls,
+    )
 
 
 @blueprint.route('/edit/<path:url>/', methods=['GET', 'POST'])

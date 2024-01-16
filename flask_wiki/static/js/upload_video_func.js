@@ -1,22 +1,42 @@
+function getURL()    {
+    const pathname = window.location.pathname;
+
+    // Split the pathname by '/' to get an array of parts
+    const urlParts = pathname.split('/');
+
+    // Remove any empty parts resulting from leading or trailing slashes
+    const cleanUrlParts = urlParts.filter(part => part !== '');
+
+    // Get the last part of the URL
+    const lastPart = cleanUrlParts[cleanUrlParts.length - 1];
+
+    return lastPart;
+};
+
+
+
 function uploadFile(event) {
 
     event.preventDefault(); // Prevent the default form submission
 
             const form = document.getElementById('uploadForm');
             const formData = new FormData(form);
+            const pagename = getURL()
+            const headers = new Headers();
 
+            headers.append('pagename', pagename);
             // Fetch presigned URL from the server
-            fetch('/upload_files', {
+            fetch('/upload_files/', {
                 method: 'POST',
                 body: formData,
+                headers: headers,
             })
-            .then(response => response.json())
-            .then(data => {
-                const presignedUrl = data.presigned_url;
+            .then(response =>  response.json())
+                .then(data => {
 
                 // Perform the actual file upload using the presigned URL
                 const xhr = new XMLHttpRequest();
-                xhr.open('PUT', presignedUrl, true);
+                xhr.open('PUT', pagename, true);
                 xhr.setRequestHeader('Content-Type', formData.get('file').type);
 
                 xhr.upload.onprogress = function (e) {
