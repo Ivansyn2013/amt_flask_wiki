@@ -21,6 +21,7 @@ from werkzeug.utils import secure_filename
 from logging import getLogger
 from urllib.parse import unquote # для декодированяи кириллицы
 from flask_wiki.models import PageDb, FilesUrls
+from flask_wiki.my_options.delete_fileurl_from_db import delete_fileurl_from_db, find_page_in_db
 
 
 user_auth = Blueprint('user_auth',
@@ -34,6 +35,7 @@ login_manager.login_view = "user_auth.login"
 login_manager.login_message = 'Привет'
 
 s3_logger = getLogger('s3_logger')
+
 
 
 @login_manager.user_loader
@@ -178,3 +180,34 @@ def upload_files():
 
 
     return jsonify({'error': 'Ошибка имени файла'})
+
+
+@user_auth.route("/remove_files/", methods=['POST'], endpoint="remove_files")
+@login_required
+def remove_files():
+    ''' Функция удаления файла из S3'''
+    from flask_wiki.my_options import allowed_file, create_client, BUCKET
+
+    if request.method == 'POST' and request.headers.get("remove_file"):
+        pagename = unquote(request.headers.get('pagename'), encoding='utf-8')
+        file_name = unquote(request.headers.get("remove_file"), encoding='utf-8')
+        PATH = f'wiki_pages/{file_name}'
+        db_page = find_page_in_db(pagename)
+
+        try:
+            s3 = create_client()
+            result = s3.delete_object(Bucket=BUCKET, Key=PATH)
+            status = result['ResponseMetadata']['HTTPStatusCode']
+            s3_logger.info(f'Выполнен запрос на удаление файла = {file_name} Код ответа = {status}')
+            if status != 200:
+                s3_logger.warning(f'Фаил не найден в хранилище! Ссылка будет удалена! \n '
+                                  f'Файл = {file_name} Код ответа = {status}')
+        except Exception as e:
+            s3_logger.error(f'Не удалось удалить фаил {e}')
+            flash('Ошибка удаления файла', 'error')
+            return jsonify({'message' : 'Ошибка удаления файла'})
+
+        delete_result_db = delete_fileurl_from_db(db_page, file_name)
+        return delete_result_db
+
+    return jsonify({'message': 'Нет файла'})

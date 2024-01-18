@@ -25,6 +25,7 @@ function uploadFile(event) {
             const headers = new Headers();
 
             headers.append('pagename', pagename);
+            headers.append('full_url', window.location.pathname);
             // Fetch presigned URL from the server
             fetch('/upload_files/', {
                 method: 'POST',
@@ -73,4 +74,45 @@ function uploadFile(event) {
                 console.error('Error fetching presigned URL:', error);
                 alert('Error fetching presigned URL. Please try again.');
             });
-        }
+        };
+
+function removeFile(event){
+  event.preventDefault();
+
+  const parentAlink = event.target.parentElement.parentElement.parentElement
+  const prevAlink = event.target.parentElement.parentElement.parentElement.previousElementSibling
+  const filename = event.target.parentElement.parentElement.parentElement.previousElementSibling.getAttribute('data-filename');
+
+  const pagename = getURL();
+  const headers = new Headers();
+
+  headers.append('pagename', pagename);
+  headers.append('remove_file', filename);
+
+  fetch('/remove_files/', {
+      method: 'POST',
+      headers: headers,
+      body: filename,
+  })
+      .then(responce => {
+          if (!responce.ok) {
+              throw new Error('HTTP error')
+          }
+          return responce.json()
+      })
+      .then(data => {
+          alert(data.message);
+          if (data.status === 'success') {
+              prevAlink.remove();
+              parentAlink.remove();
+          }
+      })
+      .catch(error => {
+          console.error(error)
+      })
+
+
+};
+
+
+
