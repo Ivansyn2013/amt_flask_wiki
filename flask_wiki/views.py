@@ -193,6 +193,9 @@ def delete_page(url):
 @blueprint.route('/file/delete/<path:filename>')
 @can_edit_permission
 def delete_file(filename):
+    '''Удаление отключено'''
+    abort(403)
+
     path = os.path.join(current_app.config.get('WIKI_UPLOAD_FOLDER'), filename)
     try:
         os.remove(path)
