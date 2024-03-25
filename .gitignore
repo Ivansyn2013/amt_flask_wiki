@@ -127,3 +127,5 @@ dmypy.json
 .pyre/
 
 **/certs
+/docker-compose-test_db.yaml
+db_backs

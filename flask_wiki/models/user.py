@@ -21,6 +21,8 @@ class User(db.Model, UserMixin):
     is_staff = Column(Boolean, nullable=False, default=False)
     is_validated = Column(Boolean, nullable=False, default=False)
     is_admin = Column(Boolean, nullable=False, default=False)
+    pages = relationship('PageDb', backref='creater', lazy='dynamic')
+
     #исправить
     _password = Column(LargeBinary, nullable=False, default=flask_crypt.generate_password_hash('123'))
     email = Column(String(255), nullable=False, default="", server_default="")

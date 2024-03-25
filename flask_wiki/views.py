@@ -139,6 +139,10 @@ def page(url):
     page = current_wiki.get_or_404(url)
     try:
         page_db = PageDb.query.filter_by(url=page.url).first()
+        if not page_db:
+            PageDb.save_in_db(page)
+            page_db = PageDb.query.filter_by(url=page.url).first()
+
         files_urls = page_db.file_url.all()
     except Exception as error:
         current_app.logger.error(error)

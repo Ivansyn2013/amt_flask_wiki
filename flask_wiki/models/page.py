@@ -1,10 +1,12 @@
 import sqlalchemy.exc
 
+from flask_wiki.models import User
 from flask_wiki.models.user import _uuid_to_str
 from db.init_db import db
 from sqlalchemy import Column,  String, Boolean, LargeBinary, ForeignKey, Text, DateTime, func
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import logging
 class PageDb(db.Model):
     __tablename__ = "pages"
 
@@ -26,12 +28,18 @@ class PageDb(db.Model):
     images - list - foreign key many to many
     videos - list - foreygn key'''
     #foreign keys
-    creater =[]
+    creater_id = Column(String, ForeignKey('user._id'), default=None)
+    #creater = db.relationship('User', back_populates='pages')
     file_url = db.relationship('FilesUrls', backref='page', lazy='dynamic')
 
     @staticmethod
     def save_in_db(page):
-        page_in_db = PageDb()
+
+        page_in_db = PageDb.query.filter_by(title=page.title).first()
+
+        if not page_in_db:
+            page_in_db = PageDb()
+
         for sett in dir(page):
             if sett in dir(page_in_db) and not sett.startswith('__'):
             #требуется преобразовагние типов
@@ -45,7 +53,7 @@ class PageDb(db.Model):
             db.session.commit()
             return True
         except sqlalchemy.exc.SQLAlchemyError as error:
-            print(error)
+            logging.error(error)
             return False
 
 

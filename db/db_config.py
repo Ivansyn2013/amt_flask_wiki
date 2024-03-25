@@ -15,8 +15,9 @@ class Develop(DbConfig):
 class Deploy(DbConfig):
     from dotenv import load_dotenv
     import os
+    #develop
+    load_dotenv('../.env_local')
 
-    load_dotenv()
     PGUSER = os.environ.get("PGUSER")
     PGPASSWORD = os.environ.get("PGPASSWORD")
     PGHOST = os.environ.get("PGHOST")
