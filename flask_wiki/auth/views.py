@@ -1,3 +1,6 @@
+from logging import getLogger
+from urllib.parse import unquote  # для декодированяи кириллицы
+
 from flask import (
     Blueprint,
     render_template,
@@ -9,20 +12,16 @@ from flask import (
     flash,
     jsonify
 )
-from flask_login import user_unauthorized, LoginManager, current_user, login_user, logout_user, login_required
-
-from flask_wiki.api import Page
-from flask_wiki.models import User
-from flask_wiki.auth.forms import RegistrationForm
-from db.init_db import db
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import IntegrityError
-from flask_wiki.auth.forms import LoginForm
 from werkzeug.utils import secure_filename
-from logging import getLogger
-from urllib.parse import unquote # для декодированяи кириллицы
-from flask_wiki.models import PageDb, FilesUrls
-from flask_wiki.my_options.delete_fileurl_from_db import delete_fileurl_from_db, find_page_in_db
 
+from db.init_db import db
+from flask_wiki.auth.forms import LoginForm
+from flask_wiki.auth.forms import RegistrationForm
+from flask_wiki.models import PageDb, FilesUrls
+from flask_wiki.models import User
+from flask_wiki.my_options.delete_fileurl_from_db import delete_fileurl_from_db, find_page_in_db
 
 user_auth = Blueprint('user_auth',
                       __name__,
@@ -37,13 +36,12 @@ login_manager.login_message = 'Привет'
 s3_logger = getLogger('s3_logger')
 
 
-
 @login_manager.user_loader
 def get_user(user):
     return User.query.get(user)
 
 
-@user_auth.route('/', methods =['POST', "GET"], endpoint='login')
+@user_auth.route('/', methods=['POST', "GET"], endpoint='login')
 def login():
     if current_user.is_authenticated and current_user.is_validated:
         return redirect(url_for('wiki.index'))
@@ -111,6 +109,7 @@ def user_show():
     data = User.query.all()
     return render_template_string('{% for user in users %} {{ user }} {% endfor %}', users=data)
 
+
 @user_auth.route("/logout/", endpoint="logout")
 @login_required
 def logout():
@@ -118,9 +117,11 @@ def logout():
     flash("Пользователь вышел", "success")
     return redirect(url_for("user_auth.login"))
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(_id=user_id).one_or_none()
+
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -132,6 +133,10 @@ def unauthorized():
 def upload_files():
     '''Функция для загрузуки виддео в хранилище'''
     from flask_wiki.my_options import allowed_file, create_client, BUCKET
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
 
     if 'file' not in request.files:
         flash('Не найден фаил', 'warning')
@@ -143,7 +148,7 @@ def upload_files():
         filename = secure_filename(file.filename)
         page_name = request.headers['pagename']
         decode_page_name = unquote(page_name, encoding='utf-8')
-        PATH = f'wiki_pages/{decode_page_name}/{filename}'
+        PATH = f'{os.getenv("PATH_S3_DIR")}/{decode_page_name}/{filename}'
         file_obj = request.files.get('file')
         # Generate a presigned URL for S3 upload
 
@@ -159,7 +164,7 @@ def upload_files():
             s3.put_object(Bucket=BUCKET, Key=PATH, Body=file_obj)
 
             flash('Создана ссылка', "success")
-            file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}' #полная ссылка
+            file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}'  # полная ссылка
 
             db_page = PageDb.query.filter_by(url=decode_page_name).first()
             file_url_db = FilesUrls(file_name=filename, file_url=file_url)
@@ -173,11 +178,9 @@ def upload_files():
         except Exception as e:
             print(e)
             flash('Ошибка загрузки файла', "warning")
-            return jsonify({'success': False, 'error': str(e) })
-
+            return jsonify({'success': False, 'error': str(e)})
 
         return jsonify({'success': True})
-
 
     return jsonify({'error': 'Ошибка имени файла'})
 
@@ -186,12 +189,16 @@ def upload_files():
 @login_required
 def remove_files():
     ''' Функция удаления файла из S3'''
-    from flask_wiki.my_options import allowed_file, create_client, BUCKET
+    from flask_wiki.my_options import create_client, BUCKET
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
 
     if request.method == 'POST' and request.headers.get("remove_file"):
         pagename = unquote(request.headers.get('pagename'), encoding='utf-8')
         file_name = unquote(request.headers.get("remove_file"), encoding='utf-8')
-        PATH = f'wiki_pages/{file_name}'
+        PATH = f'{os.getenv("PATH_S3_DIR")}/{file_name}'
         db_page = find_page_in_db(pagename)
 
         try:
@@ -205,7 +212,7 @@ def remove_files():
         except Exception as e:
             s3_logger.error(f'Не удалось удалить фаил {e}')
             flash('Ошибка удаления файла', 'error')
-            return jsonify({'message' : 'Ошибка удаления файла'})
+            return jsonify({'message': 'Ошибка удаления файла'})
 
         delete_result_db = delete_fileurl_from_db(db_page, file_name)
         return delete_result_db

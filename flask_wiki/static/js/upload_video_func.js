@@ -16,6 +16,12 @@ function getURL()    {
 
 
 function uploadFile(event) {
+    var input = document.getElementById("file_input")
+
+    if (!input.value) {
+        show_upload_alert("Фаил не выбран", "warning");
+        return;
+    }
 
     event.preventDefault(); // Prevent the default form submission
 
@@ -115,4 +121,33 @@ function removeFile(event){
 };
 
 
+function test_progress(){
+    var progress = document.getElementById("progress");
+    var progress_wrapper = document.getElementById("progress_wrapper");
+    var progress_status = document.getElementById("progress_status");
 
+    var upload_btn = document.getElementById("upload_btn");
+    var cancel_btn = document.getElementById("cancel_btn");
+    var loadding_btn = document.getElementById("loadding_btn");
+
+    var alert_wrapper = document.getElementById("alert_wrapper")
+    var input = document.getElementById()
+    var file_input_label = document.getElementById()
+
+}
+
+function show_upload_alert (message, alert){
+    var alert_wrapper = document.getElementById("alert_wrapper")
+    alert_wrapper.innerHTML = `<div class="alert alert-${alert} alert-dismissible fade show" role="alert">
+                                 <span>${message}</span> 
+                                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+`;
+};
+
+function input_filename () {
+    var file_input_label = document.getElementById("")
+    var input = document.getElementById("file_input")
+
+    file_input_label.innerText = ''
+};

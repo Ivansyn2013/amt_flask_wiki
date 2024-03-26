@@ -29,13 +29,40 @@
                    <i class="fa fa-pencil"></i> {{ _('Редактировать') }}
                 </a>
 
-                <form
+
+            </div>
+            {% endif %}
+            </header>
+
+          <div id="progress_wrapper" class="d-none">
+            <label id="progress_status">50% загрузка</label>
+            <div class="progress mb-3">
+              <div id="progress" class="progress-bar"
+                   role="progressbar" aria-valuemin="0" aria-valuenow="25" aria-valuemax="100">
+
+              </div>
+            </div>
+          </div>
+
+          <div class="alert_wrapper"></div>
+
+          <div class="row">
+            <button class="btn btn-primary d-none" id="loadding_btn" type="button" disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                  </span>
+              Загрузка...
+              </button>
+          </div>
+
+          <div class="row">
+              <form
 {#                    action="{{ url_for('user_auth.upload_files') }}"#}
                     id="uploadForm"
                     onsubmit="uploadFile(event)"
                     method="post"
                     enctype="multipart/form-data">
                   <input
+                      id="file_input"
                       class="form-control-sm fa btn"
                       type="file"
                       name="file" accept="video/*, .mp4">
@@ -45,13 +72,12 @@
                   >{{ _('Прикрепить видео') }}</button>
                 </form>
 
-            <div id="progressBar" style="display: none;">
-              <div id="progressBarFill" style="width: 0%;"></div>
+
+
+              <button class="ml-2 btn btn-outline-primary btn-sm" id="cancel_btn"
+                      type="button">Отмена</button>
             </div>
 
-            </div>
-            {% endif %}
-            </header>
             <footer class="wiki-page-info d-flex flex-column flex-lg-row justify-content-lg-between">
             {% if page.tags %}
             <ul class="wiki-page-tags m-0 p-0">
