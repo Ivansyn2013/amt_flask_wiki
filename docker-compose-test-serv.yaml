@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  nginx_amt_wiki_ver2:
+    image: nginx:1.23-alpine
+    container_name: nginx_education
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx/nginx-test-serv.conf:/etc/nginx/conf.d/default.conf"
+    depends_on:
+      - app_amt_wiki_ver3
+    networks:
+      - amt_education_net
+
+  app_amt_wiki_ver3:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: amt_wiki_ver3
+    env_file:
+      - ".env"
+    volumes:
+      - "/home/common_user/AMT_education_service/data:/app/data"
+    expose:
+    - "5006"
+    networks:
+      - amt_education_net
+
+networks:
+  amt_education_net:
+    name: amt_education_net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16

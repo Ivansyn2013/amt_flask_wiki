@@ -13,16 +13,16 @@ wait_for_postgres() {
     done
 }
 
-wait_for_postgres
+wait_for_postgres &
 
 psql -U postgres -c "$CREATE_DB" &&
 psql -U postgres -c "$CREATE_ROLE" &&
 psql -U postgres -c "$GRANT_PREV" &&
 
 
-if [ -f "/db_backs/2024-03-23-wiki-backup.sql" ]; then
+if [ -f "$PATH_TO_SQL" ]; then
     # Restore the backup file
-    $POSTRGES_PASSWORD psql -U postgres -d "$PGDB" -f /db_backs/2024-03-23-wiki-backup.sql
+    $POSTRGES_PASSWORD psql -U postgres -d "$PGDB" -f $PATH_TO_SQL
     else
       echo "Error upload dump"
 fi

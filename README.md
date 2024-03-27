@@ -47,3 +47,12 @@ Simple file based wiki for Flask.
 - WIKI_READ_VIEW_PERMISSION = lambda: True
 - WIKI_EDIT_UI_PERMISSION = WIKI_EDIT_VIEW_PERMISSION
 - WIKI_READ_UI_PERMISSION = WIKI_READ_VIEW_PERMISSION
+
+### For Deploy
+
+- wsgi -change logger
+- app - change app creating
+- collect static by static_sc.sh in container
+- migrate `flask db migrate` in container
+- unpack data in folder before docker start
+- sql dump upload before docker start
