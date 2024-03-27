@@ -180,7 +180,7 @@ def upload_files():
             flash('Ошибка загрузки файла', "warning")
             return jsonify({'success': False, 'error': str(e)})
 
-        return jsonify({'success': True})
+        return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
 
     return jsonify({'error': 'Ошибка имени файла'})
 
@@ -209,6 +209,7 @@ def remove_files():
             if status != 200:
                 s3_logger.warning(f'Фаил не найден в хранилище! Ссылка будет удалена! \n '
                                   f'Файл = {file_name} Код ответа = {status}')
+
         except Exception as e:
             s3_logger.error(f'Не удалось удалить фаил {e}')
             flash('Ошибка удаления файла', 'error')

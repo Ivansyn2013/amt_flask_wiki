@@ -31,7 +31,7 @@
 
 
             </div>
-            {% endif %}
+
             </header>
 
           <div id="progress_wrapper" class="d-none">
@@ -44,41 +44,43 @@
             </div>
           </div>
 
-          <div class="alert_wrapper"></div>
-
-          <div class="row">
-            <button class="btn btn-primary d-none" id="loadding_btn" type="button" disabled>
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
-                  </span>
-              Загрузка...
-              </button>
+          <div id="alert_wrapper">
           </div>
 
-          <div class="row">
-              <form
-{#                    action="{{ url_for('user_auth.upload_files') }}"#}
-                    id="uploadForm"
-                    onsubmit="uploadFile(event)"
-                    method="post"
-                    enctype="multipart/form-data">
-                  <input
-                      id="file_input"
-                      class="form-control-sm fa btn"
+          <div class="custom-uploader" id="uploader">
+          </div>
+          <div class="custom-file mb-5 mt-2">
+
+            <input    id="file_input"
+                      class="custom-file-input mb-3"
                       type="file"
-                      name="file" accept="video/*, .mp4">
-                  <button class="fa fa-film btn btn-outline-primary btn-sm"
-                          type="submit"
-{#                          onclick="uploadFile()"#}
-                  >{{ _('Прикрепить видео') }}</button>
-                </form>
+                      oninput="input_filename()">
+            <label for="file_input" id="file_input_label" class="custom-file-label">Загрузить фаил</label>
+
+              <button class="fa d-none btn btn-sm btn-primary custom-file-upload"
+                  id="loadding_btn"
+                  type="button"
+                  disabled>
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true">
+                  </span>
+                  Загрузка...
+              </button>
+
+              <button class="fa fa-film btn btn-outline-primary btn-sm custom-file-submit"
+                      id="upload_btn"
+                      type="submit"
+{#                      onclick="uploadFile(event)"#}
+                      onclick="uploadFileProgress()"
+              >{{ _('Прикрепить видео') }}</button>
 
 
 
-              <button class="ml-2 btn btn-outline-primary btn-sm" id="cancel_btn"
+              <button class="fa ml-2 btn btn-outline-primary btn-sm custom-file-cancel d-none" id="cancel_btn"
                       type="button">Отмена</button>
             </div>
+            {% endif %}
 
-            <footer class="wiki-page-info d-flex flex-column flex-lg-row justify-content-lg-between">
+            <footer class="mt-3 wiki-page-info d-flex flex-column flex-lg-row justify-content-lg-between">
             {% if page.tags %}
             <ul class="wiki-page-tags m-0 p-0">
                 {% for tag in page.tags.split(',') %}

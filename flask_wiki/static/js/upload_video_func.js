@@ -14,6 +14,108 @@ function getURL()    {
 };
 
 
+function uploadFileProgress() {
+    var input = document.getElementById("file_input")
+    var progress = document.getElementById("progress");
+    var progress_wrapper = document.getElementById("progress_wrapper");
+    var progress_status = document.getElementById("progress_status");
+
+    var upload_btn = document.getElementById("upload_btn");
+    var cancel_btn = document.getElementById("cancel_btn");
+    var loadding_btn = document.getElementById("loadding_btn");
+
+    var alert_wrapper = document.getElementById("alert_wrapper")
+    var file_input_label = document.getElementById("file_input_label")
+    const pagename = getURL();
+
+    if (!input.value) {
+        show_upload_alert("Фаил не выбран", "warning");
+        return;
+    }
+
+    let data = new FormData();
+    let request = new XMLHttpRequest();
+    request.responseType = "json"
+
+    alert_wrapper.innerHTML = ''
+    input.disabled = true;
+    upload_btn.classList.add("d-none")
+    loadding_btn.classList.remove("d-none")
+    cancel_btn.classList.remove("d-none")
+    progress_wrapper.classList.remove("d-none")
+
+    let file = input.files[0];
+    let filename = file.name;
+    let filesize = file.size;
+
+    document.cooke = `filesize=${filesize}`;
+
+    data.append("file", file)
+
+    request.upload.addEventListener("progress", function (event){
+        let loaded = event.loaded;
+        let total = event.total;
+        let percentage_complete = (loaded / total) * 100;
+
+        progress.setAttribute('style', `width: ${Math.floor(percentage_complete)}%`);
+        progress_status.innerText = `${Math.floor(percentage_complete)}%`;
+    })
+
+    request.addEventListener("load", function (event) {
+
+        if (request.status == 200) {
+
+            show_upload_alert(`${request.response.message}`, "success");
+            reset_upload();
+        }
+        else {
+            show_upload_alert("Ошибка загрузки файла", "danger");
+            reset_upload();
+        }
+
+
+    })
+
+    request.addEventListener("error", function (event){
+        reset_upload();
+        show_upload_alert("Ошибка загрузки файла", "danger");
+
+    })
+
+    request.open("post", "/upload_files/");
+    request.setRequestHeader("pagename", pagename);
+    request.setRequestHeader("full_url", window.location.pathname);
+
+    request.send(data);
+
+    cancel_btn.addEventListener("click", function (event){
+        request.abort();
+        reset_upload();
+    })
+
+ }
+
+function reset_upload(){
+    var input = document.getElementById("file_input")
+    var upload_btn = document.getElementById("upload_btn");
+    var cancel_btn = document.getElementById("cancel_btn");
+    var loadding_btn = document.getElementById("loadding_btn");
+    var progress_wrapper = document.getElementById("progress_wrapper");
+    var progress = document.getElementById("progress");
+    var file_input_label = document.getElementById("file_input_label")
+
+
+    input.value = null;
+    input.disabled = false
+    cancel_btn.classList.add('d-none');
+    loadding_btn.classList.add('d-none');
+    upload_btn.classList.remove('d-none');
+    progress_wrapper.classList.add('d-none');
+    progress.setAttribute("style", "width: 0%");
+    file_input_label.innerText = "Выбери фаил";
+
+}
+
 
 function uploadFile(event) {
     var input = document.getElementById("file_input")
@@ -131,23 +233,24 @@ function test_progress(){
     var loadding_btn = document.getElementById("loadding_btn");
 
     var alert_wrapper = document.getElementById("alert_wrapper")
-    var input = document.getElementById()
-    var file_input_label = document.getElementById()
+    var input = document.getElementById("file_input")
+    var file_input_label = document.getElementById("file_input_label")
 
 }
 
 function show_upload_alert (message, alert){
     var alert_wrapper = document.getElementById("alert_wrapper")
     alert_wrapper.innerHTML = `<div class="alert alert-${alert} alert-dismissible fade show" role="alert">
-                                 <span>${message}</span> 
-                                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-`;
+                ${message}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>`;
 };
 
 function input_filename () {
-    var file_input_label = document.getElementById("")
+    var file_input_label = document.getElementById("file_input_label")
     var input = document.getElementById("file_input")
 
-    file_input_label.innerText = ''
+    file_input_label.innerText = input.files[0].name
 };
