@@ -12,10 +12,10 @@ class PageDb(db.Model):
 
     _id = Column(String, primary_key=True, default=_uuid_to_str)
 
-    title = Column(String, unique=True)
+    title = Column(String)
     html = Column(Text)
     tags = Column(String)
-    create_date = Column(DateTime, default=datetime.now, server_default=func.now())
+    create_date = Column(DateTime, default=lambda: datetime.now, server_default=func.now())
     update_date = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     body = Column(Text)
     content = Column(String)
