@@ -9,4 +9,8 @@ RUN apt-get update \
     && apt-get -y install libpq-dev gcc \
     && pip install psycopg2
 RUN poetry install
+
+#RUN flask db upgrade
+#RUN flask db migrate
+
 CMD ["gunicorn", "--workers=4", "wsgi:app", "-b", "0.0.0.0:5006"]

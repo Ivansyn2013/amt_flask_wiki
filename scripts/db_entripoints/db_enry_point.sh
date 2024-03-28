@@ -1,5 +1,8 @@
 #!/bin/bash
-CREATE_DB="CREATE DATABASE $PGDB;"
+set +x
+source .env
+
+CREATE_DB="CREATE DATABASE  $PGDB;"
 CREATE_ROLE="CREATE ROLE $PGUSER WITH LOGIN PASSWORD '$PGPASSWORD';"
 GRANT_PREV="GRANT ALL PRIVILEGES ON DATABASE $PGDB TO $PGUSER;"
 
@@ -13,18 +16,19 @@ wait_for_postgres() {
     done
 }
 
-wait_for_postgres &
+wait_for_postgres 
 
-psql -U postgres -c "$CREATE_DB" &&
-psql -U postgres -c "$CREATE_ROLE" &&
-psql -U postgres -c "$GRANT_PREV" &&
+psql -U postgres -c "$CREATE_DB" 
+psql -U postgres -c "$CREATE_ROLE" 
+psql -U postgres -c "$GRANT_PREV" 
 
 
 if [ -f "$PATH_TO_SQL" ]; then
     # Restore the backup file
     $POSTRGES_PASSWORD psql -U postgres -d "$PGDB" -f $PATH_TO_SQL
-    else
-      echo "Error upload dump"
+    echo "Dump upladed"
+	else
+	      echo "Error upload dump"
 fi
 
 
