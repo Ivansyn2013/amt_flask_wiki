@@ -4,6 +4,8 @@ source .env
 
 CREATE_DB="CREATE DATABASE  $PGDB;"
 CREATE_ROLE="CREATE ROLE $PGUSER WITH LOGIN PASSWORD '$PGPASSWORD';"
+CREATE_DB="CREATE DATABASE IF NOT EXISTS $PGDB;"
+CREATE_ROLE="CREATE ROLE IF NOT EXISTS $PGUSER WITH LOGIN PASSWORD '$PGPASSWORD';"
 GRANT_PREV="GRANT ALL PRIVILEGES ON DATABASE $PGDB TO $PGUSER;"
 
 
@@ -26,6 +28,7 @@ psql -U postgres -c "$GRANT_PREV"
 if [ -f "$PATH_TO_SQL" ]; then
     # Restore the backup file
     $POSTRGES_PASSWORD psql -U postgres -d "$PGDB" -f $PATH_TO_SQL
+
     echo "Dump upladed"
 	else
 	      echo "Error upload dump"
