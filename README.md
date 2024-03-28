@@ -56,3 +56,12 @@ Simple file based wiki for Flask.
 - migrate `flask db migrate` in container
 - unpack data in folder before docker start
 - sql dump upload before docker start
+- change table owner in db <br> `SELECT 'ALTER TABLE public.' || tablename || ' OWNER TO new_owner;' FROM pg_tables 
+  WHERE schemaname = 'public';
+- show tables owners <br> `SELECT                                                                                           schemaname || '.' || tablename AS full_table_name,
+    tableowner
+FROM
+    pg_tables
+WHERE
+    schemaname = 'public';
+`
