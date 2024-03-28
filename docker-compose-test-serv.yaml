@@ -20,9 +20,9 @@ services:
     env_file:
       - ".env"
     volumes:
-      - "/home/amt_user/amt_wiki/amt_flask_wiki/data:/app/data"
-   expose:
-    - "5006"
+      - "/home/amt_user/amt_wiki/data:/app/data"
+    expose:
+      - "5006"
     networks:
       - amt_education_net
 
