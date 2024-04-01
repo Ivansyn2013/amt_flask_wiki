@@ -7,5 +7,5 @@ import os
 
 if __name__ == '__main__':
     load_dotenv()
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     app.run()
