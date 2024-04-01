@@ -1,5 +1,6 @@
 from logging import getLogger
 from urllib.parse import unquote  # для декодированяи кириллицы
+import logging
 
 from flask import (
     Blueprint,
@@ -34,6 +35,18 @@ login_manager.login_view = "user_auth.login"
 login_manager.login_message = 'Привет'
 
 s3_logger = getLogger('s3_logger')
+s3_logger.setLevel(logging.DEBUG)  # Set the logging level
+
+# Create a StreamHandler to write to stdout
+stdout_handler = logging.StreamHandler()
+stdout_handler.setLevel(logging.DEBUG)  # Set the logging level for stdout handler
+
+# Create a formatter and set it for the StreamHandler
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+stdout_handler.setFormatter(formatter)
+
+# Add the StreamHandler to the logger
+s3_logger.addHandler(stdout_handler)
 
 
 @login_manager.user_loader
@@ -141,7 +154,7 @@ def upload_files():
     page_name = request.args.get('pagename')
 
     decode_page_name = unquote(page_name, encoding='utf-8')
-    PATH = f'{os.getenv("PATH_S3_DIR")}/{decode_page_name}/{filename}' #dir on s3 in env file
+    PATH = f'{os.getenv("PATH_S3_DIR")}/{decode_page_name}/{filename}'  # dir on s3 in env file
 
     s3 = create_client()
     # создание ссылки для загрузки
@@ -169,28 +182,27 @@ def upload_files():
 
     return jsonify({'upload_url': presigned_url}), 200
 
-        # try:
-        #     s3.put_object(Bucket=BUCKET, Key=PATH, Body=file_obj)
-        #
-        #     flash('Создана ссылка', "success")
-        #     file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}'  # полная ссылка
-        #
-        #     db_page = PageDb.query.filter_by(url=decode_page_name).first()
-        #     file_url_db = FilesUrls(file_name=filename, file_url=file_url)
-        #     db_page.file_url.append(file_url_db)
-        #     db.session.add(db_page)
-        #     db.session.commit()
-        #
-        #     s3_logger.info(f'Сохранен фаил в хранилище с именем {PATH} и ссылкой {file_url}')
-        #
-        #
-        # except Exception as e:
-        #     print(e)
-        #     flash('Ошибка загрузки файла', "warning")
-        #     return jsonify({'success': False, 'error': str(e)})
-        #
-        # return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
-
+    # try:
+    #     s3.put_object(Bucket=BUCKET, Key=PATH, Body=file_obj)
+    #
+    #     flash('Создана ссылка', "success")
+    #     file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}'  # полная ссылка
+    #
+    #     db_page = PageDb.query.filter_by(url=decode_page_name).first()
+    #     file_url_db = FilesUrls(file_name=filename, file_url=file_url)
+    #     db_page.file_url.append(file_url_db)
+    #     db.session.add(db_page)
+    #     db.session.commit()
+    #
+    #     s3_logger.info(f'Сохранен фаил в хранилище с именем {PATH} и ссылкой {file_url}')
+    #
+    #
+    # except Exception as e:
+    #     print(e)
+    #     flash('Ошибка загрузки файла', "warning")
+    #     return jsonify({'success': False, 'error': str(e)})
+    #
+    # return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
 
 
 @user_auth.route("/remove_files/", methods=['POST'], endpoint="remove_files")
