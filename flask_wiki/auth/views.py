@@ -137,8 +137,8 @@ def upload_files():
     import os
 
     load_dotenv()
-    filename = request.headers.get('filename')
-    page_name = request.headers['pagename']
+    filename = request.args.get('filename')
+    page_name = request.args.get('pagename')
 
     decode_page_name = unquote(page_name, encoding='utf-8')
     PATH = f'{os.getenv("PATH_S3_DIR")}/{decode_page_name}/{filename}' #dir on s3 in env file

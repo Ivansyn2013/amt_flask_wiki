@@ -255,8 +255,6 @@ function input_filename () {
 
 
 function getUploadS3Url () {
-    const headers = new Headers();
-    const pagename = getURL();
     var input = document.getElementById("file_input")
 
     if (!input.value) {
@@ -265,18 +263,14 @@ function getUploadS3Url () {
     }
 
     let file = input.files[0];
-    let filename = file.name;
 
-    if (pagename.length > 254 || filename.length > 254){
-        show_upload_alert("Длинна имени файла или страницы не может быть больше 255 симвлов", "warning");
-        return;
-    }
+    const pagename = encodeURIComponent(getURL());
+    const filename = encodeURIComponent(file.name);
+    const url = `/upload_files?pagename=${pagename}&filename=${filename}`;
 
-    headers.append('pagename', pagename);
-    headers.append('filename', filename);
-    fetch( '/upload_files/', {
+
+    fetch( url, {
         method: 'get',
-        headers: headers,
 
     })
         .then(responce => {
