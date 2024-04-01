@@ -65,7 +65,7 @@ function uploadFileProgress(upload_url) {
 
         if (request.status == 200) {
 
-            show_upload_alert(`${request.response.message}`, "success");
+            show_upload_alert('Фаил успешно загружен. Обновите страницу', "success");
             reset_upload();
         }
         else {
