@@ -14,7 +14,7 @@ function getURL()    {
 };
 
 
-function uploadFileProgress() {
+function uploadFileProgress(upload_url) {
     var input = document.getElementById("file_input")
     var progress = document.getElementById("progress");
     var progress_wrapper = document.getElementById("progress_wrapper");
@@ -82,9 +82,7 @@ function uploadFileProgress() {
 
     })
 
-    request.open("post", "/upload_files/");
-    request.setRequestHeader("pagename", pagename);
-    request.setRequestHeader("full_url", window.location.pathname);
+    request.open("put", upload_url);
 
     request.send(data);
 
@@ -254,3 +252,44 @@ function input_filename () {
 
     file_input_label.innerText = input.files[0].name
 };
+
+
+function getUploadS3Url () {
+    const headers = new Headers();
+    const pagename = getURL();
+    var input = document.getElementById("file_input")
+    let file = input.files[0];
+    let filename = file.name;
+
+    headers.append('pagename', pagename);
+    headers.append('filename', filename);
+    fetch( '/upload_files/', {
+        method: 'get',
+        headers: headers,
+
+    })
+        .then(responce => {
+            if (!responce.ok) {
+                console.log(responce.json());
+                show_upload_alert(responce.json(), 'error');
+            }
+
+            return responce.json()
+        })
+        .then(data => {
+            if (data && data.upload_url) {
+                uploadFileProgress(data.upload_url);
+            }
+            else{
+                show_upload_alert('error upload url', 'error')
+                }
+        }
+
+        )
+            .catch(error => {
+                console.error('Error upload file:', error);
+                show_upload_alert(error, 'error'); // This return statement is optional since it's at the end of the
+                // function.
+            });
+};
+

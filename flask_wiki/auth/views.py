@@ -128,61 +128,69 @@ def unauthorized():
     return redirect(url_for("user_auth.login"))
 
 
-@user_auth.route("/upload_files/", methods=['POST'], endpoint="upload_files")
+@user_auth.route("/upload_files/", methods=['GET'], endpoint="upload_files")
 @login_required
 def upload_files():
-    '''Функция для загрузуки виддео в хранилище'''
+    '''Функция для загрузуки видео в хранилище'''
     from flask_wiki.my_options import allowed_file, create_client, BUCKET
     from dotenv import load_dotenv
     import os
 
     load_dotenv()
+    filename = request.headers.get('filename')
+    page_name = request.headers['pagename']
 
-    if 'file' not in request.files:
-        flash('Не найден фаил', 'warning')
-        return jsonify({'error': 'No file selected'}), 400
+    decode_page_name = unquote(page_name, encoding='utf-8')
+    PATH = f'{os.getenv("PATH_S3_DIR")}/{decode_page_name}/{filename}' #dir on s3 in env file
 
-    file = request.files['file']
+    s3 = create_client()
+    # создание ссылки для загрузки
+    presigned_url = s3.generate_presigned_url(
+        'put_object',
+        Params={'Bucket': BUCKET, 'Key': PATH},
+        ExpiresIn=7200
+    )
 
-    if file.filename and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        page_name = request.headers['pagename']
-        decode_page_name = unquote(page_name, encoding='utf-8')
-        PATH = f'{os.getenv("PATH_S3_DIR")}/{decode_page_name}/{filename}'
-        file_obj = request.files.get('file')
-        # Generate a presigned URL for S3 upload
+    try:
+        flash('Создана ссылка', "success")
+        file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}'  # полная ссылка
 
-        s3 = create_client()
-        # создание ссылки для загрузки
-        # presigned_url = s3.generate_presigned_url(
-        #     'put_object',
-        #     Params={'Bucket': BUCKET, 'Key': filename},
-        #     ExpiresIn=360  # The URL will expire in 1 hour
-        # )
+        db_page = PageDb.query.filter_by(url=decode_page_name).first()
+        file_url_db = FilesUrls(file_name=filename, file_url=file_url)
+        db_page.file_url.append(file_url_db)
+        db.session.add(db_page)
+        db.session.commit()
 
-        try:
-            s3.put_object(Bucket=BUCKET, Key=PATH, Body=file_obj)
+        s3_logger.info(f'Сохранен фаил в хранилище с именем {PATH} и ссылкой {file_url}. Пользователь {current_user}')
+    except Exception as e:
+        flash('Ошибка загрузки файла', "warning")
+        s3_logger.error(f'Ошибка сохранения {PATH} в базе данных. Пользователь {current_user}')
+        return jsonify({'success': False, 'error': str(e)}), 506
 
-            flash('Создана ссылка', "success")
-            file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}'  # полная ссылка
+    return jsonify({'upload_url': presigned_url}), 200
 
-            db_page = PageDb.query.filter_by(url=decode_page_name).first()
-            file_url_db = FilesUrls(file_name=filename, file_url=file_url)
-            db_page.file_url.append(file_url_db)
-            db.session.add(db_page)
-            db.session.commit()
+        # try:
+        #     s3.put_object(Bucket=BUCKET, Key=PATH, Body=file_obj)
+        #
+        #     flash('Создана ссылка', "success")
+        #     file_url = f'{s3.meta.endpoint_url}/{BUCKET}/{PATH}'  # полная ссылка
+        #
+        #     db_page = PageDb.query.filter_by(url=decode_page_name).first()
+        #     file_url_db = FilesUrls(file_name=filename, file_url=file_url)
+        #     db_page.file_url.append(file_url_db)
+        #     db.session.add(db_page)
+        #     db.session.commit()
+        #
+        #     s3_logger.info(f'Сохранен фаил в хранилище с именем {PATH} и ссылкой {file_url}')
+        #
+        #
+        # except Exception as e:
+        #     print(e)
+        #     flash('Ошибка загрузки файла', "warning")
+        #     return jsonify({'success': False, 'error': str(e)})
+        #
+        # return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
 
-            s3_logger.info(f'Сохранен фаил в хранилище с именем {PATH} и ссылкой {file_url}')
-
-
-        except Exception as e:
-            print(e)
-            flash('Ошибка загрузки файла', "warning")
-            return jsonify({'success': False, 'error': str(e)})
-
-        return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
-
-    return jsonify({'error': 'Ошибка имени файла'})
 
 
 @user_auth.route("/remove_files/", methods=['POST'], endpoint="remove_files")
