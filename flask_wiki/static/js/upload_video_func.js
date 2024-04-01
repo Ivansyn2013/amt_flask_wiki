@@ -261,6 +261,16 @@ function getUploadS3Url () {
     let file = input.files[0];
     let filename = file.name;
 
+    if (!input.value) {
+        show_upload_alert("Фаил не выбран", "warning");
+        return;
+    }
+
+    if (pagename.length > 254 || filename.length > 254){
+        show_upload_alert("Длинна имени файла или страницы не может быть больше 255 симвлов", "warning");
+        return;
+    }
+
     headers.append('pagename', pagename);
     headers.append('filename', filename);
     fetch( '/upload_files/', {
