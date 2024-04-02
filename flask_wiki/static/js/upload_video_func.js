@@ -33,7 +33,6 @@ function uploadFileProgress(upload_url) {
         return;
     }
 
-    let data = new FormData();
     let request = new XMLHttpRequest();
     request.responseType = "json"
 
@@ -50,7 +49,6 @@ function uploadFileProgress(upload_url) {
 
     document.cooke = `filesize=${filesize}`;
 
-    data.append("file", file)
 
     request.upload.addEventListener("progress", function (event){
         let loaded = event.loaded;
@@ -83,8 +81,9 @@ function uploadFileProgress(upload_url) {
     })
 
     request.open("put", upload_url);
-
-    request.send(data);
+    request.setRequestHeader('Content-Type', file.type);
+    request.setRequestHeader('Content-Length', file.size);
+    request.send(file);
 
     cancel_btn.addEventListener("click", function (event){
         request.abort();
