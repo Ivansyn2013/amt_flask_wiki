@@ -216,7 +216,7 @@ def remove_files():
     load_dotenv()
 
     pagename = unquote(request.args.get('pagename'), encoding='utf-8')
-    file_name = unquote(request.args.get("remove_file"), encoding='utf-8')
+    file_name = unquote(request.args.get("filename"), encoding='utf-8')
 
     PATH = f'{os.getenv("PATH_S3_DIR")}/{file_name}'
     db_page = find_page_in_db(pagename)

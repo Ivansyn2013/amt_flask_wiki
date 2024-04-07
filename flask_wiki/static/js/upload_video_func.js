@@ -186,7 +186,7 @@ function removeFile(event){
 
   const parentAlink = event.target.parentElement.parentElement.parentElement
   const prevAlink = event.target.parentElement.parentElement.parentElement.previousElementSibling
-  const filename = event.target.parentElement.parentElement.parentElement.previousElementSibling.getAttribute('data-filename');
+  const filename = parentAlink.firstElementChild.getAttribute('data-filename');
 
   const pagename = getURL();
 
@@ -194,7 +194,6 @@ function removeFile(event){
 
   fetch(url, {
       method: 'GET',
-      body: filename,
   })
       .then(responce => {
           if (!responce.ok) {
