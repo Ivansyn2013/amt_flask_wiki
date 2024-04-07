@@ -136,11 +136,12 @@ def index():
 @blueprint.route('/<path:url>/')
 @can_read_permission
 def page(url):
+
     page = current_wiki.get_or_404(url)
     try:
         page_db = PageDb.query.filter_by(url=page.url).first()
         if not page_db:
-            PageDb.save_in_db(page)
+            PageDb.save_in_db(page, current_user)
             page_db = PageDb.query.filter_by(url=page.url).first()
 
         files_urls = page_db.file_url.all()
@@ -169,7 +170,7 @@ def edit(url):
         if not page:
             page = current_wiki.get_bare(url)
         form.populate_obj(page)
-        page.save()
+        page.save(current_user)
         flash(_('Сохранено'), category='success')
         return redirect(url_for('wiki.page', url=url))
     return render_template(

@@ -191,7 +191,7 @@ class Page(object):
         self.modification_datetime = datetime.fromtimestamp(
             os.path.getmtime(self.path))
 
-    def save(self, update=True):
+    def save(self, creater, update=True):
         folder = os.path.dirname(self.path)
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -205,7 +205,8 @@ class Page(object):
         if update:
             self.load()
             self.render()
-        current_app.logger.info("Страница сохранена в базе" if PageDb.save_in_db(self) else "Ошибка сохранения в базе")
+        current_app.logger.info("Страница сохранена в базе" if PageDb.save_in_db(self, creater) else "Ошибка "
+                                                                                                    "сохранения в базе")
 
     @property
     def meta(self):

@@ -43,4 +43,4 @@ class User(db.Model, UserMixin):
         return self._id
 
     def __repr__(self):
-        return f" Работает {self.first_name!r} "
+        return f"{self.first_name!r}"

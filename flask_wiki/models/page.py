@@ -33,8 +33,7 @@ class PageDb(db.Model):
     file_url = db.relationship('FilesUrls', backref='page', lazy='dynamic')
 
     @staticmethod
-    def save_in_db(page):
-
+    def save_in_db(page, user):
         page_in_db = PageDb.query.filter_by(title=page.title).first()
 
         if not page_in_db:
@@ -49,6 +48,7 @@ class PageDb(db.Model):
                     setattr(page_in_db, sett, getattr(page, sett))
 
         try:
+            page_in_db.creater_id = user._id
             db.session.add(page_in_db)
             db.session.commit()
             return True
