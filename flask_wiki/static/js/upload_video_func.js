@@ -189,14 +189,11 @@ function removeFile(event){
   const filename = event.target.parentElement.parentElement.parentElement.previousElementSibling.getAttribute('data-filename');
 
   const pagename = getURL();
-  const headers = new Headers();
 
-  headers.append('pagename', pagename);
-  headers.append('remove_file', filename);
+  const url = `/remove_files?pagename=${pagename}&filename=${filename}`
 
-  fetch('/remove_files/', {
-      method: 'POST',
-      headers: headers,
+  fetch(url, {
+      method: 'GET',
       body: filename,
   })
       .then(responce => {

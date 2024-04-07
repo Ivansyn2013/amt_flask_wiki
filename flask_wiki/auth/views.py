@@ -205,7 +205,7 @@ def upload_files():
     # return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
 
 
-@user_auth.route("/remove_files/", methods=['POST'], endpoint="remove_files")
+@user_auth.route("/remove_files/", methods=['GET'], endpoint="remove_files")
 @login_required
 def remove_files():
     ''' Функция удаления файла из S3'''
@@ -215,27 +215,26 @@ def remove_files():
 
     load_dotenv()
 
-    if request.method == 'POST' and request.headers.get("remove_file"):
-        pagename = unquote(request.headers.get('pagename'), encoding='utf-8')
-        file_name = unquote(request.headers.get("remove_file"), encoding='utf-8')
-        PATH = f'{os.getenv("PATH_S3_DIR")}/{file_name}'
-        db_page = find_page_in_db(pagename)
+    pagename = unquote(request.args.get('pagename'), encoding='utf-8')
+    file_name = unquote(request.args.get("remove_file"), encoding='utf-8')
 
-        try:
-            s3 = create_client()
-            result = s3.delete_object(Bucket=BUCKET, Key=PATH)
-            status = result['ResponseMetadata']['HTTPStatusCode']
-            s3_logger.info(f'Выполнен запрос на удаление файла = {file_name} Код ответа = {status}')
-            if status != 200 or status != 204:
-                s3_logger.warning(f'Фаил не найден в хранилище! Ссылка будет удалена! \n '
-                                  f'Файл = {file_name} Код ответа = {status}')
+    PATH = f'{os.getenv("PATH_S3_DIR")}/{file_name}'
+    db_page = find_page_in_db(pagename)
 
-        except Exception as e:
-            s3_logger.error(f'Не удалось удалить фаил {e}')
-            flash('Ошибка удаления файла', 'error')
-            return jsonify({'message': 'Ошибка удаления файла'})
+    try:
+        s3 = create_client()
+        result = s3.delete_object(Bucket=BUCKET, Key=PATH)
+        status = result['ResponseMetadata']['HTTPStatusCode']
+        s3_logger.info(f'Выполнен запрос на удаление файла = {file_name} Код ответа = {status}')
+        if status != 200 or status != 204:
+            s3_logger.warning(f'Фаил не найден в хранилище! Ссылка будет удалена! \n '
+                              f'Файл = {file_name} Код ответа = {status}')
 
-        delete_result_db = delete_fileurl_from_db(db_page, file_name)
-        return delete_result_db
+    except Exception as e:
+        s3_logger.error(f'Не удалось удалить фаил {e}')
+        flash('Ошибка удаления файла', 'error')
+        return jsonify({'message': 'Ошибка удаления файла'})
 
-    return jsonify({'message': 'Нет файла'})
+    delete_result_db = delete_fileurl_from_db(db_page, file_name)
+    return delete_result_db
+
