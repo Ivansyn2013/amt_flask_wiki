@@ -226,7 +226,7 @@ def remove_files():
             result = s3.delete_object(Bucket=BUCKET, Key=PATH)
             status = result['ResponseMetadata']['HTTPStatusCode']
             s3_logger.info(f'Выполнен запрос на удаление файла = {file_name} Код ответа = {status}')
-            if status != 200:
+            if status != 200 or status != 204:
                 s3_logger.warning(f'Фаил не найден в хранилище! Ссылка будет удалена! \n '
                                   f'Файл = {file_name} Код ответа = {status}')
 
