@@ -127,3 +127,6 @@ dmypy.json
 .pyre/
 
 **/certs
+
+/ssl/
+init_letcript.sh
