@@ -15,7 +15,7 @@ class PageDb(db.Model):
     title = Column(String)
     html = Column(Text)
     tags = Column(String)
-    create_date = Column(DateTime, default=lambda: datetime.now, server_default=func.now())
+    create_date = Column(DateTime, default=datetime.now, server_default=func.now())
     update_date = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     body = Column(Text)
     content = Column(String)
@@ -28,7 +28,7 @@ class PageDb(db.Model):
     images - list - foreign key many to many
     videos - list - foreygn key'''
     #foreign keys
-    creater_id = Column(String, ForeignKey('user._id'), default=None)
+    creater_id = Column(String, ForeignKey('user._id'), nullable=True)
     #creater = db.relationship('User', back_populates='pages')
     file_url = db.relationship('FilesUrls', backref='page', lazy='dynamic')
 
