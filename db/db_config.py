@@ -32,3 +32,21 @@ class Deploy(DbConfig):
     SECRET_KEY = os.environ.get('SECRET_KEY')
     PORT = os.environ.get("PORT")
     FLASK_ADMIN_SWATCH = 'cerulean'
+
+class Test_config(DbConfig):
+    from dotenv import load_dotenv
+    import os
+    load_dotenv()
+
+    PGUSER = os.environ.get("PGUSER")
+    PGPASSWORD = os.environ.get("PGPASSWORD")
+    PGHOST = os.environ.get("PGHOST")
+    PGDB = os.environ.get('PGDB_TEST')
+
+    TESTING = os.environ.get('TESTING')
+    DEBUG = os.environ.get('DEBUG')
+    SQLALCHEMY_DATABASE_URI = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}/{PGDB}'
+    SQLALCHEMY_MODIFICATIONS = False
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    PORT = os.environ.get("PORT")
+    FLASK_ADMIN_SWATCH = 'cerulean'

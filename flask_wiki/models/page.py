@@ -1,10 +1,7 @@
 import sqlalchemy.exc
-
-from flask_wiki.models import User
 from flask_wiki.models.user import _uuid_to_str
 from db.init_db import db
 from sqlalchemy import Column,  String, Boolean, LargeBinary, ForeignKey, Text, DateTime, func
-from sqlalchemy.orm import relationship
 from datetime import datetime
 import logging
 class PageDb(db.Model):

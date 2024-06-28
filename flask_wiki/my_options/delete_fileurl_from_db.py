@@ -1,10 +1,11 @@
 from logging import getLogger
-from flask_wiki.models import PageDb, FilesUrls
+
 from db.init_db import db
 from flask.json import jsonify
 db_logger = getLogger('db_logger')
 
 def find_page_in_db(pagename):
+    from flask_wiki.models import PageDb
     try:
         db_page = PageDb.query.filter_by(url=pagename).first()
         db_logger.debug(f"Получена страница {db_page}")

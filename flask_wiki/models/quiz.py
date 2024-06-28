@@ -1,42 +1,98 @@
 from db.init_db import db
-from .user import _uuid_to_str
-from sqlalchemy import Column, Integer, String, Boolean, LargeBinary, ForeignKey, UUID, DateTime, TEXT
+from flask_wiki.my_options import uuid_to_str
+from sqlalchemy import (event,
+                        Column,
+                        Integer,
+                        String,
+                        Boolean,
+                        LargeBinary,
+                        ForeignKey,
+                        UUID,
+                        DateTime,
+                        TEXT,
+                        )
 from sqlalchemy.orm import relationship
-from flask_login import UserMixin
-from security import flask_crypt
+from flask_login import UserMixin, current_user
 from datetime import datetime
+from flask_wiki.models.departments import Department
+
+quizs_users_relation_table = db.Table('quizs_users_relation_table',
+                                      db.Column('quiz_id', String, db.ForeignKey('quiz._id')),
+                                      db.Column('user_id', String, db.ForeignKey('user._id'))
+                                      )
 
 class Quiz(db.Model):
+    '''
+    created_at - создан кем, задается однажды
+    updated_at - создан когда, задается однажды
+    name - название теста
+    threshold - порог прохождения
+    department - отдел, из модели отделов О-М
+    created_by - кем создан, из модели пользователей О-М
+    update_by - кем обновлен, из модели пользователей О-М
+    assigned_to - кому назначен, из модели пользователей М-М
+    questions - вопросы теста, из модели тестов М-О
+    url - url страницы для сдачи теста
+    department - отдел компании
+    '''
     __tablename__ = 'quiz'
-    _id = Column(String, primary_key=True, default=_uuid_to_str)
-    created_at = Column(DateTime, default=datetime.utcnow, editable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    _id = Column(String, primary_key=True, default=uuid_to_str)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True)
+    name = Column(String, unique=True, nullable=False)
+    threshold = Column(Integer, nullable=False)
+    url = Column(String, nullable=True)
+
 
     #Foreignkey
+
     created_by = Column(String, ForeignKey('user._id'), nullable=False)
+    update_by = Column(String, ForeignKey('user._id'), nullable=True, default=None)
+
+    #Many-to-Many
+    assigned_to = relationship('User', secondary=quizs_users_relation_table, backref="quizzes")
+
     #One-to-many
     questions = relationship('QuizQuestion', backref='quiz', cascade='all, delete-orphan')
+    department_id = Column(String, ForeignKey('department._id'), nullable=True)
+
+    def __repr__(self):
+        return '<Quiz(id={0.id}, name={0.name})>'.format(self)
 
 class QuizAnswer(db.Model):
     __tablename__ = 'quiz_answers'
-    _id = Column(String, primary_key=True, default=_uuid_to_str)
+
+    _id = Column(String, primary_key=True, default=uuid_to_str)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow)
 
-    text = Column(TEXT, nullable=True)
-    correct = Column(Boolean, nullable=True)
+    text = Column(TEXT, nullable=False)
+    correct = Column(Boolean, nullable=False, default=False)
 
-    #ForeignKey
+    #ForeignKey O-M
     question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
 
 class QuizQuestion(db.Model):
-    __tablename__ = 'quiz_quetions'
-    _id = Column(String, primary_key=True, default=_uuid_to_str)
+    __tablename__ = 'quiz_questions'
+    _id = Column(String, primary_key=True, default=uuid_to_str)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow)
 
-    text = Column(TEXT, nullable=True)
+    text = Column(TEXT, nullable=False)
 
     #Foreignkeys
+    quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
     answers = relationship('QuizAnswer', backref='question', cascade='all, delete-orphan')
+
+
+class QuizResults(db.Model):
+    __tablename__ = 'quiz_results'
+    _id = Column(String, primary_key=True, default=uuid_to_str)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    travel_time = Column(Integer, nullable=True)
+    result = Column(Integer, nullable=True)
+    active = Column(Boolean, nullable=False, default=True)
+
+    #Foreign keys
+    user_id = Column(String, ForeignKey('user._id'), nullable=False)
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)

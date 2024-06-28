@@ -18,7 +18,7 @@ from db.init_db import db
 from security import flask_crypt
 from flask_wiki.auth.views import login_manager
 from flask_wiki import Wiki
-from db.db_config import Develop, Deploy
+from db.db_config import Develop, Deploy, Test_config
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_wiki.admin import MyAdminView
@@ -37,10 +37,14 @@ def create_app(test_config=None):
         PORT=5003,
 
     )
+
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
         app.config.from_object(Develop)
+    elif test_config == 'test_mode':
+        app.config.from_pyfile('config.py', silent=True)
+        app.config.from_object(Test_config)
     else:
         # load the test config if passed in
         app.config.from_pyfile('config.py', silent=True)
@@ -76,5 +80,5 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-app = create_app(test_config='Deploy')
+#app = create_app(test_config='Deploy')
 #app = create_app()
