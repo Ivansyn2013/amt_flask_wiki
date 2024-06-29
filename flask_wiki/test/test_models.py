@@ -10,7 +10,7 @@ def test_user_creation(test_client, init_database):
     '''Тест на создание пользователя в базе , он созжается фикстурами'''
     user = User.query.first()
     assert user is not None
-    assert user.first_name == 'test_user'
+    assert user.first_name == 'test_user0'
 
 def test_quiz_creation(test_client, init_database):
     '''Тест создания Опроса с вопросами и ответами'''

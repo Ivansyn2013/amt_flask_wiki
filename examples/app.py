@@ -24,7 +24,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_wiki.admin import MyAdminView
 from flask_wiki.models.user import User
 
-def create_app(test_config=None):
+def create_app(test_config=None): # не забудь поменять
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -41,7 +41,7 @@ def create_app(test_config=None):
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
-        app.config.from_object(Develop)
+        app.config.from_object(Deploy)
     elif test_config == 'test_mode':
         app.config.from_pyfile('config.py', silent=True)
         app.config.from_object(Test_config)
@@ -80,5 +80,4 @@ def create_app(test_config=None):
         return redirect(url_for('wiki.index'))
     return app
 
-#app = create_app(test_config='Deploy')
-#app = create_app()
+#app = create_app(test_config='test_mode')

@@ -1,0 +1,71 @@
+{% extends config.get('WIKI_BASE_TEMPLATE') %}
+{% set active_page = "page" %}
+
+{% block head %}
+  {{ super() }}
+  <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+  <link href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+        rel="stylesheet"
+  />
+
+
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+<main class="row mt-4 wiki-page">
+    <div class="col-md-7 offset-md-2">
+        <header class="d-flex flex-column justify-content-lg-between mb-4 pb-2 border-bottom">
+            <header class="wiki-page-header d-flex flex-column flex-lg-row justify-content-lg-between mb-2 mb-lg-0">
+            <h1 class="wiki-page-title mb-0">{{page.title}}</h1>
+            </header>
+
+
+            <footer class="wiki-page-info d-flex flex-column flex-lg-row justify-content-lg-between">
+            {% if page.tags %}
+            <ul class="wiki-page-tags m-0 p-0">
+                {% for tag in page.tags.split(',') %}
+                <li class="badge badge-primary">{{ tag }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div class="text-muted small">
+            </div>
+            </footer>
+        </header>
+        <article class="content">
+{#        {{ page }}#}
+          {% include "includes/video_player.html" %}
+        </article>
+    </div>
+    <aside class="col-md-3">
+        <div class="toc sticky-top pt-3">
+          <ul class="media-list">
+            {% for file in videos %}
+              <li class="media">
+                <a id="video_el" class="pull-left" onclick="videoUrl('{{ url_for("uploaded_video", filename=file) }}')">
+                  {{ file.split(".")[0] }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+    </aside>
+</main>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+  let video = document.querySelector("video");
+  function videoUrl(url, event) {
+      console.log("videoURL");
+      video.pause();
+      const video_source = video.querySelector("source");
+      video_source.setAttribute('src', url);
+      video.load();
+      video.play();
+  }
+</script>
+
+{% endblock %}

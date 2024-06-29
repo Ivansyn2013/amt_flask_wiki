@@ -11,20 +11,18 @@
 
 import glob
 import os
-from datetime import datetime
 from functools import wraps
-from flask_login import current_user
 
 from babel import Locale
-from flask import (Blueprint, abort, current_app, flash, jsonify, redirect,
+from flask import (Blueprint, abort, current_app, flash, redirect,
                    render_template, request, url_for)
-from flask.wrappers import Response
 from flask_babelex import gettext as _
+from flask_login import current_user
 from werkzeug.utils import secure_filename
 
+from flask_wiki.models import PageDb
 from .api import Processor, current_wiki, get_wiki
 from .forms import EditorForm, NewPageForm
-from flask_wiki.models import PageDb
 
 blueprint = Blueprint(
     'wiki',
@@ -273,7 +271,7 @@ def create_page():
 @blueprint.route('/list_pages', methods=['GET'])
 @can_read_permission
 def list_pages():
-    '''Функция рисует список страниц, можно передать что-нить через ревест (request.args) и забрать по индексу'''
+    '''Функция рисует список страниц, можно передать что-нить через реквест (request.args) и забрать по индексу'''
     r = current_wiki
 
     if 'page_tag' in request.args:
@@ -287,8 +285,6 @@ def list_pages():
 @blueprint.route('/video', methods=['GET'])
 @can_read_permission
 def video_player():
-    r = current_wiki
-    #print(r.index())
     videos = [os.path.basename(f) for f in sorted(glob.glob(
         '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*.mp4'])), key=os.path.getmtime)]
     return render_template('wiki/video_play.html', page=[], videos=videos)
@@ -303,3 +299,25 @@ def list_pages_by_moduls():
     print(r.index())
     list_pages = r.index_by_tag(tag)
     return render_template('wiki/list_pages.html', list_pages=list_pages)
+
+@blueprint.route('/show_quizzs', methods=['GET'])
+@can_edit_permission
+def show_quizzs():
+    return render_template('quiz/show_quizzs.html', page=[], videos=videos)
+
+@blueprint.route('/show_quizzs', methods=['GET'])
+@can_edit_permission
+def create_quiz():
+    return render_template('quiz/create_quiz.html', page=[], videos=videos)
+
+@blueprint.route('/show_quizzs', methods=['GET'])
+@can_edit_permission
+def quiz():
+    return render_template('quiz/quiz.html', page=[], videos=videos)
+
+@blueprint.route('/show_quizzs', methods=['GET'])
+@can_edit_permission
+def quiz_details():
+    videos = [os.path.basename(f) for f in sorted(glob.glob(
+        '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*.mp4'])), key=os.path.getmtime)]
+    return render_template('quiz/quiz_details.html', page=[], videos=videos)

@@ -32,7 +32,10 @@ class User(db.Model, UserMixin):
     #Foreignkeys
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
     #Many-to-many
-    assigned_quizs = relationship('Quiz', secondary=quiz.quizs_users_relation_table, backref="Users")
+    assigned_quizs = relationship('Quiz',
+                                  secondary=quiz.quizs_users_relation_table,
+                                  backref="Users",
+                                  overlaps="assigned_to,quizzes")
 
     @property
     def password(self):

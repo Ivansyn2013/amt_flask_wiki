@@ -1,13 +1,13 @@
-from flask_sqlalchemy import SQLAlchemy
-from db.init_db import db
-import pytest
-from flask_wiki.my_options import get_obligatory_fields
-from flask_wiki.models import PageDb, FilesUrls
-from flask_wiki.models import User
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
 import os
+
+import pytest
+from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+
+from db.init_db import db
 from examples.app import create_app
+from flask_wiki.models import User, Quiz, QuizQuestion, QuizAnswer
+from flask_wiki.my_options import get_obligatory_fields
 
 load_dotenv('../../.env')
 DB = os.getenv('PGDB_TEST')
@@ -41,24 +41,50 @@ def init_database():
 
     user_fields = get_obligatory_fields(User)
     user_fields.remove('_password')
-    user_data = (
-        'test_user',
-        'test_user_lastname',
-        'test_user_login',
-        False,
-        True,
-        False,
-                 )
-    user_data = dict(zip(user_fields, user_data))
+    user_list = []
 
     with app.app_context():
         db.drop_all()
         db.create_all()
 
-        user = User(**user_data)
-        User.password = '123'
-        db.session.add(user)
+        for i in range(5):
+            user_data = (
+                f'test_user{i}',
+                f'test_user_lastname{i}',
+                f'test_user_login{i}',
+                False,
+                True,
+                False,
+            )
+
+            user_data = dict(zip(user_fields, user_data))
+            user = User(**user_data)
+            User.password = '123'
+            user_list.append(user)
+
+        db.session.add_all(user_list)
         db.session.commit()
         yield user
+
+@pytest.fixture
+def create_quiz(init_database):
+    user = init_database
+
+    quiz_list = []
+    for i in range(1,10):
+        answer = QuizAnswer(text=f'TestAnswer{i}', correct=False)
+
+        question = QuizQuestion(text=f'TestQuestion{i}', answers=[answer])
+
+        quiz = Quiz(name=f'test_name{i}',
+                    threshold=10,
+                    created_by=user._id,
+                    questions=[question],
+                    assigned_to=[user],)
+        quiz_list.append(quiz)
+
+    db.session.add_all(quiz_list)
+    db.session.commit()
+
 
 

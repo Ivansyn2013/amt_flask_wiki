@@ -50,14 +50,17 @@ class Quiz(db.Model):
     update_by = Column(String, ForeignKey('user._id'), nullable=True, default=None)
 
     #Many-to-Many
-    assigned_to = relationship('User', secondary=quizs_users_relation_table, backref="quizzes")
+    assigned_to = relationship('User',
+                               secondary=quizs_users_relation_table,
+                               backref="quizzes",
+                               overlaps="assigned_to,quizzes")
 
     #One-to-many
     questions = relationship('QuizQuestion', backref='quiz', cascade='all, delete-orphan')
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
 
     def __repr__(self):
-        return '<Quiz(id={0.id}, name={0.name})>'.format(self)
+        return '<Quiz(id={0._id}, name={0.name})>'.format(self)
 
 class QuizAnswer(db.Model):
     __tablename__ = 'quiz_answers'
