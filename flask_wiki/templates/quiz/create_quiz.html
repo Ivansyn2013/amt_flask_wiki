@@ -1,4 +1,6 @@
 {% from 'bootstrap/utils.html' import render_messages %}
+{% from 'macro/add_question_macro.html' import render %}
+{% from 'macro/add_quiz_macro.html' import render_quiz%}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +21,7 @@
   <link href="{{ url_for('wiki.static', filename='css/quiz/quiz.css') }}" rel="stylesheet"/>
   <!-- EasyMDE -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.16.1/dist/easymde.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   {% endblock %}
 
   <title>{{ _('AMT-Wiki') }}</title>
@@ -35,33 +38,23 @@
     {{ render_messages(dismissible=True, dismiss_animate=True) }}
 
     {% block navigation %}
-      {%- include "wiki/navigation.html" %}
+      {% include "wiki/navigation.html" %}
     {% endblock %}
 
     {% block content %}
-    <div data-delay="2500" id="copy-success" class="toast hide">
-      <div class="toast-header text-primary font-weight-bold">
-          Markdown
-      </div>
-      <div class="toast-body">
-          {{ _('Link copied to your clipboard') }}
-      </div>
-    </div>
-    <div data-delay="2500" id="copy-error" class="toast hide">
-      <div class="toast-header text-primary font-weight-bold">
-          Markdown
-      </div>
-      <div class="toast-body">
-          {{ _('Failed to copy link to your clipboard') }}
-      </div>
-    </div>
+    <div class="col-md-8 offset-md-2">
+      <form class="" action="#" method="POST" id="quizCreateForm">
+        {{ form.csrf_token() }}
 
-    <div class="col-md-7 offset-md-2">
-        {% for link in list_pages %}
-        <li>
-            <a href="{{ url_for('wiki.page', url=link.url) }}">{{ link.title }}</a>
-        </li>
+        {% for field in form if field.name != 'csrf_token' %}
+          {{ render_quiz(field) }}
+{#        <li>{{ field.name }}</li>#}
         {% endfor %}
+        <div>
+{#          {{ form.submit(class="btn btn-primary") }}#}
+          <button class="btn btn-primary" type="submit">Создать</button>
+        </div>
+      </form>
     </div>
     {% endblock %}
   </div>
@@ -81,10 +74,11 @@
 
   {% block scripts %}
   <!-- EasyMDE -->
-  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+{#  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>#}
   <!-- Optional JavaScript -->
   {{ bootstrap.load_js() }}
   <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/wiki.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/quiz.js') }}"></script>
   {% endblock %}
 </body>
 

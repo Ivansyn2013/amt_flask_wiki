@@ -11,8 +11,15 @@
 
 from flask_babelex import gettext as _
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, StringField, Form
-from wtforms.validators import InputRequired
+from wtforms import (IntegerField,
+                     TextAreaField,
+                     Form,
+                     StringField,
+                     validators,
+                     PasswordField,
+                     SubmitField,
+                     BooleanField,)
+from wtforms.validators import InputRequired, DataRequired
 
 
 class EditorForm(FlaskForm):
@@ -32,3 +39,27 @@ class NewPageForm(FlaskForm):
         pass
 
     url = StringField(_('Название'), [InputRequired()])
+
+class CreateQuizForm(FlaskForm):
+    #quiz settings
+    quiz_name = StringField(
+        _('Название теста'),
+        [DataRequired()],
+        render_kw={"title": "Введите название теста"}
+
+    )
+    threshold = IntegerField(
+        _('Порог прохождения'),
+        [DataRequired()],
+        render_kw={"title": "Введите число необходимых правильный ответов для прохождения теста"}
+    )
+    department = StringField(
+        _('Отдел компании'),
+        [DataRequired()],
+        render_kw={"title": "Введите название отдела, к которому относится тест"},
+    )
+
+    #questions settings
+    question = TextAreaField(_('Вопрос'), [DataRequired()])
+    answer = TextAreaField(_('Ответ'), [DataRequired()])
+    #correct_answer = BooleanField(_('Правильный'), )

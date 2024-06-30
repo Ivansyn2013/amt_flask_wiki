@@ -15,10 +15,7 @@ class Develop(DbConfig):
 class Deploy(DbConfig):
     from dotenv import load_dotenv
     import os
-    #develop
-    #load_dotenv('../.env_local')
-    #PRODUCT
-    load_dotenv()
+    load_dotenv('../.env_local')
 
     PGUSER = os.environ.get("PGUSER")
     PGPASSWORD = os.environ.get("PGPASSWORD")
@@ -27,6 +24,7 @@ class Deploy(DbConfig):
 
     TESTING = os.environ.get('TESTING')
     DEBUG = os.environ.get('DEBUG')
+    FLASK_DEBUG = os.environ.get('DEBUG')
     SQLALCHEMY_DATABASE_URI = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}/{PGDB}'
     SQLALCHEMY_MODIFICATIONS = False
     SECRET_KEY = os.environ.get('SECRET_KEY')

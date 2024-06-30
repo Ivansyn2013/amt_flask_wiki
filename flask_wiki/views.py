@@ -20,9 +20,10 @@ from flask_babelex import gettext as _
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 
-from flask_wiki.models import PageDb
+from flask_wiki.models import PageDb, Quiz
 from .api import Processor, current_wiki, get_wiki
-from .forms import EditorForm, NewPageForm
+from .forms import EditorForm, NewPageForm, CreateQuizForm
+
 
 blueprint = Blueprint(
     'wiki',
@@ -296,26 +297,34 @@ def list_pages_by_moduls():
 
     tag = 'модуль'
     r = current_wiki
-    print(r.index())
     list_pages = r.index_by_tag(tag)
     return render_template('wiki/list_pages.html', list_pages=list_pages)
 
 @blueprint.route('/show_quizzs', methods=['GET'])
 @can_edit_permission
 def show_quizzs():
-    return render_template('quiz/show_quizzs.html', page=[], videos=videos)
+    list_quizs = Quiz.query.all()
+    return render_template('quiz/show_quizzs.html', list_quizs=list_quizs)
 
-@blueprint.route('/show_quizzs', methods=['GET'])
+@blueprint.route('/create_q', methods=['GET', 'POST'])
 @can_edit_permission
 def create_quiz():
-    return render_template('quiz/create_quiz.html', page=[], videos=videos)
+    '''View for quiz creating with form'''
+    form = CreateQuizForm()
+    if request.method == 'GET':
 
-@blueprint.route('/show_quizzs', methods=['GET'])
+        return render_template('quiz/create_quiz.html', form=form)
+
+    elif request.method == 'POST': #and form.validate_on_submit():
+        return "Форма отправлена", 200
+
+
+@blueprint.route('/234', methods=['GET'])
 @can_edit_permission
 def quiz():
     return render_template('quiz/quiz.html', page=[], videos=videos)
 
-@blueprint.route('/show_quizzs', methods=['GET'])
+@blueprint.route('/show_qui2342342zzs', methods=['GET'])
 @can_edit_permission
 def quiz_details():
     videos = [os.path.basename(f) for f in sorted(glob.glob(
