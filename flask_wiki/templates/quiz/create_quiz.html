@@ -41,22 +41,22 @@
       {% include "wiki/navigation.html" %}
     {% endblock %}
 
-    {% block content %}
-    <div class="col-md-8 offset-md-2">
-      <form class="" action="#" method="POST" id="quizCreateForm">
-        {{ form.csrf_token() }}
+      {% block content %}
+        <div class="col-md-8 offset-md-2">
+          <form class="" action="#" method="POST" id="quizCreateForm">
+            {{ form.csrf_token() }}
 
-        {% for field in form if field.name != 'csrf_token' %}
-          {{ render_quiz(field) }}
-{#        <li>{{ field.name }}</li>#}
-        {% endfor %}
-        <div>
-{#          {{ form.submit(class="btn btn-primary") }}#}
-          <button class="btn btn-primary" type="submit">Создать</button>
+            {% for field in form if field.name != 'csrf_token' %}
+              {{ render_quiz(field) }}
+    {#        <li>{{ field.name }}</li>#}
+            {% endfor %}
+            <div>
+    {#          {{ form.submit(class="btn btn-primary") }}#}
+              <button class="btn btn-primary" onclick="createJsonForm(event)">Создать</button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-    {% endblock %}
+      {% endblock %}
   </div>
 
   <footer class="container py-5">

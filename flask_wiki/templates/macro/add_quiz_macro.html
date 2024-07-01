@@ -1,12 +1,6 @@
 {% macro render_quiz(field) %}
 
   {% if field.name == "answer" %}
-    <i class="fa-solid fa-circle-plus add-quest-btn my_tooltip"
-             role="button"
-             tabindex="0"
-             onclick="addQuestion(this)">
-            <span class="my_tooltiptext add-quest-tooltext">Добавить вопрос</span>
-          </i>
     <div id="answerNumber1" class="form-outline form-white mb-4 col-8 offset-4">
       <div class="container ">
         {{ field.label(class="form-label text-body") }}
@@ -14,9 +8,9 @@
         <div class="question-container">
 
           <label class="form-label text-body" for="correct_answer">Ответ верный</label>
-          <input class="form-control form-control-md question-checkbox" id="correct_answer" name="correct_answer" required=""
+          <input class="form-control form-control-md question-checkbox" id="correct_answer" name="correct_answer"
                  type="checkbox"
-                 value="">
+                 value="y">
 
         </div>
 
@@ -24,10 +18,22 @@
       {{ field(class="form-control form-control-md" + (" is-invalid" if field.errors else "")) }}
       <i class="fa-solid fa-circle-plus add-quest-btn my_tooltip"
              role="button"
+             id="answerButton"
              tabindex="0"
              onclick="addAnswer(this)">
             <span class="my_tooltiptext add-quest-tooltext">Добавить ответ</span>
           </i>
+    </div>
+  {% elif field.name == "question" %}
+    <div class="form-outline form-white mb-4">
+      {{ field.label(class="form-label text-body") }}
+      {{ field(class="form-control form-control-md" + (" is-invalid" if field.errors else "")) }}
+      <i class="fa-solid fa-circle-plus add-quest-btn my_tooltip"
+             role="button"
+             tabindex="0"
+             onclick="addQuestion(this)">
+            <span class="my_tooltiptext add-quest-tooltext">Добавить вопрос</span>
+      </i>
     </div>
   {% else %}
     <div class="form-outline form-white mb-4">

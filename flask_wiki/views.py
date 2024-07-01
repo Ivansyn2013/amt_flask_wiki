@@ -20,7 +20,8 @@ from flask_babelex import gettext as _
 from flask_login import current_user
 from werkzeug.utils import secure_filename
 
-from flask_wiki.models import PageDb, Quiz
+from flask_wiki.models import PageDb, Quiz, QuizQuestion, QuizAnswer
+
 from .api import Processor, current_wiki, get_wiki
 from .forms import EditorForm, NewPageForm, CreateQuizForm
 
@@ -310,13 +311,21 @@ def show_quizzs():
 @can_edit_permission
 def create_quiz():
     '''View for quiz creating with form'''
+    from flask_wiki.my_options import create_quiz_from_request
     form = CreateQuizForm()
     if request.method == 'GET':
 
         return render_template('quiz/create_quiz.html', form=form)
 
     elif request.method == 'POST': #and form.validate_on_submit():
-        return "Форма отправлена", 200
+        data = request.json
+        if data['questions'] == {}:
+            return abort(400, "Ошибка теста. Не может быть только один вопрос")
+
+        user = current_user
+        quiz = create_quiz_from_request(user=user, data=data)
+
+        return render_template('quiz/quiz_created.html', quiz=quiz)
 
 
 @blueprint.route('/234', methods=['GET'])

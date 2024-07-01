@@ -17,3 +17,21 @@ class Department(db.Model):
     #Foreignkeys
     users = relationship('User', backref='department')
     quiz = relationship('Quiz', backref='department')
+
+    @classmethod
+    def get_or_create(cls, defaults=None, **kwargs):
+        session = db.get_session()
+
+        try:
+            instance = session.query(cls).filter_by(**kwargs).first()
+            if instance:
+                return instance, False
+            else:
+                params = {**kwargs, **(defaults or {})}
+                instance = cls(**params)
+                session.add(instance)
+                session.commit()
+                return instance, True
+        except Exception as e:
+            session.rollback()
+            raise e

@@ -1,0 +1,11 @@
+{% extends 'quiz/create_quiz.html' %}
+  {% block content %}
+  	<div class="col-md-8 offset-md-2">
+      <h2>Создан новый тест с параметрами</h2>
+      {% for quiz_data in quiz %}
+        <li>
+          {{ quiz_data }} : {{ quiz[quiz_data] }}
+        </li>
+      {% endfor %}
+    </div>
+  {% endblock %}

@@ -50,7 +50,6 @@ class CreateQuizForm(FlaskForm):
     )
     threshold = IntegerField(
         _('Порог прохождения'),
-        [DataRequired()],
         render_kw={"title": "Введите число необходимых правильный ответов для прохождения теста"}
     )
     department = StringField(
