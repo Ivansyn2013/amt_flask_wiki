@@ -34,7 +34,7 @@ class User(db.Model, UserMixin):
     #Many-to-many
     assigned_quizs = relationship('Quiz',
                                   secondary=quiz.quizs_users_relation_table,
-                                  backref="Users",
+                                  backref="users",
                                   overlaps="assigned_to,quizzes")
 
     @property

@@ -1,0 +1,17 @@
+{% extends 'quiz/create_quiz.html' %}
+{% block content %}
+
+<div class="col-md-8 offset-md-2">
+  <form class="form" action="{{ url_for("wiki.assinged_user_list", quiz_id=quiz_id) }}" method="POST">
+    <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
+    {% for user in users %}
+      <li class="row-cols-2">
+        <label class="form-group" for="user">{{ user.first_name }} {{ user.last_name }}</label>
+        <input class="form-group" name="user" type="checkbox" value="{{ user._id }}" data-value="{{ user._id }}">
+      </li>
+    {% endfor %}
+
+  <button class="btn btn-primary" type="submit">Назначить</button>
+  </form>
+</div>
+{% endblock %}

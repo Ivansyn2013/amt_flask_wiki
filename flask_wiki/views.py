@@ -359,7 +359,33 @@ def my_quizs():
 @blueprint.route('/quiz/<quiz_id>', methods=['GET'])
 @can_edit_permission
 def quiz_details(quiz_id):
+    from sqlalchemy.orm import joinedload
 
-    quiz = Quiz.query.get_or_404(quiz_id)
-
+    quiz = (Quiz.query.options(
+        joinedload(Quiz.assigned_to),
+        joinedload(Quiz.created_by_user))
+            .get(quiz_id))
+    if not quiz:
+        return abort(404, "Тест не найден")
     return render_template('quiz/quiz_details.html', quiz=quiz)
+
+
+@blueprint.route('/assinged/<quiz_id>', methods=['GET', 'POST'])
+@can_edit_permission
+def assinged_user_list(quiz_id):
+    from flask_wiki.models import User
+    from flask_wiki.my_options import assined_quiz_to_users
+    if request.method == 'GET':
+        users = User.query.all()
+        return render_template('quiz/assinged_to.html', users=users, quiz_id=quiz_id)
+
+    else:
+        data = request.form
+        data_dict = dict(data.lists())
+
+        if assined_quiz_to_users(**data_dict):
+            flash("Пользователи успешно подписаны", category='info')
+            return redirect(url_for('wiki.index'))
+        else:
+            flash("Произошла ошибка назначения пользователей", category='danger')
+            return redirect(url_for('wiki.index'))

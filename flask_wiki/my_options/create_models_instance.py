@@ -1,5 +1,7 @@
 import logging
 
+from sqlalchemy.exc import SQLAlchemyError
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,3 +36,34 @@ def create_quiz_from_request(data, user):
                 questions=questions)
 
     return quiz
+
+def assined_quiz_to_users(**kwargs):
+    '''Function for assinged users to quizs
+    return True if ok and Fasle if not
+    '''
+    from db.init_db import db
+    from flask_wiki.models import Quiz, User
+    try:
+        quiz = Quiz.query.get(kwargs['quiz_id'])
+        users = User.query.filter(User._id.in_(kwargs['user'])).all()
+        for user in users:
+            if check_assigned(user, quiz):
+                users.remove(user)
+
+        quiz.assigned_to.extend(users)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f'Error in write assinged users. Function assined_quiz_to_users\n {e} ')
+        return False
+
+    return True
+
+def check_assigned(user, quiz):
+    '''Check is user already have this test'''
+    from flask_wiki.models import Quiz, User
+    #User.query.join(user.assigned_quizs).filter(quiz._id == Quiz._id).all()
+    if quiz in user.assigned_quizs:
+        return True
+    else:
+        return False

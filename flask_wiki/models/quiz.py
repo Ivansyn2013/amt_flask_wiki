@@ -46,7 +46,14 @@ class Quiz(db.Model):
 
     #Foreignkey
 
-    created_by = Column(String, ForeignKey('user._id'), nullable=False)
+    created_by = Column(String, ForeignKey('user._id'),
+                        nullable=False,
+                        )
+    #очень долго разбирался в рещультате такая конструкция позволяет
+    # подгуржать данные и передавать в шаблон created_by_userс view quiz_details
+    created_by_user = db.relationship('User', foreign_keys=[created_by],
+                                      #back_populates='created_quizs',
+                                      primaryjoin="User._id == Quiz.created_by")
     update_by = Column(String, ForeignKey('user._id'), nullable=True, default=None)
 
     #Many-to-Many
