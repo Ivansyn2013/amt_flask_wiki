@@ -36,7 +36,9 @@
           {% else %}
             {% for test in list_quizs %}
               <li>
-                {{ test.name }}
+                <a href="{{ url_for('wiki.quiz_details', quiz_id=test._id) }}">
+                  {{ test.name }}
+                </a>
               </li>
             {% endfor %}
           {% endif %}

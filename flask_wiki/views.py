@@ -18,13 +18,17 @@ from flask import (Blueprint, abort, current_app, flash, redirect,
                    render_template, request, url_for)
 from flask_babelex import gettext as _
 from flask_login import current_user
+from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.utils import secure_filename
 
 from flask_wiki.models import PageDb, Quiz, QuizQuestion, QuizAnswer
 
 from .api import Processor, current_wiki, get_wiki
 from .forms import EditorForm, NewPageForm, CreateQuizForm
+from db.init_db import db
+import logging
 
+logger = logging.getLogger(__name__)
 
 blueprint = Blueprint(
     'wiki',
@@ -312,6 +316,9 @@ def show_quizzs():
 def create_quiz():
     '''View for quiz creating with form'''
     from flask_wiki.my_options import create_quiz_from_request
+    from db.init_db import db
+    import psycopg2
+
     form = CreateQuizForm()
     if request.method == 'GET':
 
@@ -325,17 +332,34 @@ def create_quiz():
         user = current_user
         quiz = create_quiz_from_request(user=user, data=data)
 
-        return render_template('quiz/quiz_created.html', quiz=quiz)
+        try:
+            db.session.add(quiz)
+            db.session.commit()
+        except (SQLAlchemyError, psycopg2.errors.UniqueViolation) as e:
+            logger.error(f"Error to write in db {quiz}\n{e}")
+            db.session.rollback()
+            if "duplicate key value " in str(e):
+                flash('Такой тест уже существует', category='info')
+                return render_template('quiz/quiz_details.html', quiz=quiz)
+
+            return abort(400, "Ошибка записи теста")
+
+        return render_template('quiz/quiz_details.html', quiz=quiz)
 
 
-@blueprint.route('/234', methods=['GET'])
+@blueprint.route('/myquiz', methods=['GET'])
 @can_edit_permission
-def quiz():
-    return render_template('quiz/quiz.html', page=[], videos=videos)
+def my_quizs():
+    '''Show assigned quizs'''
+    from flask_wiki.models import User
+    user = current_user
+    list_quizs = Quiz.query.join(Quiz.assigned_to).filter(User._id == user._id)
+    return render_template('quiz/my_quizzs.html', list_quizs=list_quizs)
 
-@blueprint.route('/show_qui2342342zzs', methods=['GET'])
+@blueprint.route('/quiz/<quiz_id>', methods=['GET'])
 @can_edit_permission
-def quiz_details():
-    videos = [os.path.basename(f) for f in sorted(glob.glob(
-        '/'.join([current_app.config.get('WIKI_UPLOAD_FOLDER'), '*.mp4'])), key=os.path.getmtime)]
-    return render_template('quiz/quiz_details.html', page=[], videos=videos)
+def quiz_details(quiz_id):
+
+    quiz = Quiz.query.get_or_404(quiz_id)
+
+    return render_template('quiz/quiz_details.html', quiz=quiz)

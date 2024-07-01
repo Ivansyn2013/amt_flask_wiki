@@ -2,10 +2,29 @@
   {% block content %}
   	<div class="col-md-8 offset-md-2">
       <h2>Создан новый тест с параметрами</h2>
-      {% for quiz_data in quiz %}
         <li>
-          {{ quiz_data }} : {{ quiz[quiz_data] }}
+          Название теста : {{ quiz.name }}
         </li>
-      {% endfor %}
+        <li>
+          Дата создания : {{ quiz.created_at }}
+        </li>
+    <li>
+          Назначен : {{ quiz.assigned_to }}
+        </li>
+    <li>
+          Отдел : {{ quiz.department }}
+        </li>
+    <li>
+          Дата создания : {{ quiz.created_at }}
+        </li>
+    <li>
+      Уровень прохождения : {{ quiz.threshold }}
+    </li>
+    <li>
+      Создан : {{  quiz.created_by }}
+    </li>
+    <li>
+      Вопросы : {{ quiz.questions }}
+    </li>
     </div>
   {% endblock %}

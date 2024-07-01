@@ -20,7 +20,7 @@ class Department(db.Model):
 
     @classmethod
     def get_or_create(cls, defaults=None, **kwargs):
-        session = db.get_session()
+        session = db.session
 
         try:
             instance = session.query(cls).filter_by(**kwargs).first()

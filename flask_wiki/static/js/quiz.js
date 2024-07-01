@@ -1,7 +1,10 @@
-function renderResponse(responceData) {
-    //const renderConrtainer = document.getElementsByClassName('col-md-8 offset-md-2')[0]
-    //renderConrtainer.innerHTML = responceData; // render text of responce in container
-    document.body.innerHTML = responceData;
+function renderResponse(responceData, status) {
+    if (status !== 200) {
+        const renderConrtainer = document.getElementsByClassName('col-md-8 offset-md-2')[0]
+        renderConrtainer.innerHTML = responceData; // render text of responce in container
+    } else {
+        document.body.innerHTML = responceData;
+    }
 };
 
 function sendFormData(data){
@@ -10,14 +13,17 @@ function sendFormData(data){
     const xhr = new XMLHttpRequest();
 
     xhr.onload = function() {
-    if (xhr.status === 200) {
-        const response = xhr.responseText;
-        console.log('Server response:', response);
-        renderResponse(response);  // Call a function to render the response
-    } else {
-        console.error('Request failed with status:', xhr.status);
-        // Handle error cases, e.g., show error message to user
-    }
+    const response = xhr.responseText;
+    renderResponse(response,xhr.status);
+
+    // if (xhr.status === 200) {
+    //     const response = xhr.responseText;
+    //     console.log('Server response:', response);
+    //     renderResponse(response);  // Call a function to render the response
+    // } else {
+    //     console.error('Request failed with status:', xhr.status);
+    //     // Handle error cases, e.g., show error message to user
+    // }
 };
 
     xhr.onerror = function() {
@@ -47,7 +53,7 @@ function findAnswers(element){
         let answer_text = nextElement.querySelector('#answer')
 
         answers[nextElement.id] = {
-            'correct' : correct.value,
+            'correct' : correct.checked ? 1:0,
             'text' : answer_text.value,
         }
         nextElement = nextElement.nextElementSibling;
@@ -196,7 +202,8 @@ function createJsonForm(event) {
         formData.questions[quest.id].text = quest_text;
     });
 
+//     return formData
+
     sendFormData(formData);
-    // return formData
 };
 
