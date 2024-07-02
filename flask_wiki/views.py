@@ -354,6 +354,7 @@ def my_quizs():
     from flask_wiki.models import User
     user = current_user
     list_quizs = Quiz.query.join(Quiz.assigned_to).filter(User._id == user._id)
+    quizs = user.assigned_quizs
     return render_template('quiz/my_quizzs.html', list_quizs=list_quizs)
 
 @blueprint.route('/quiz/<quiz_id>', methods=['GET'])
@@ -389,3 +390,11 @@ def assinged_user_list(quiz_id):
         else:
             flash("Произошла ошибка назначения пользователей", category='danger')
             return redirect(url_for('wiki.index'))
+@blueprint.route('/quiz_play/<quiz_id>', methods=['GET', 'POST'])
+@can_read_permission
+def quiz_play(quiz_id):
+    from sqlalchemy.orm import joinedload
+    quiz = Quiz.query.options(joinedload(Quiz.questions)).get_or_404(quiz_id)
+    quiz_dict = quiz.to_dict()
+
+    return render_template('quiz/quiz_play.html', quiz=quiz_dict)

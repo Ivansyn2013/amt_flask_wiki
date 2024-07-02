@@ -66,6 +66,32 @@ class Quiz(db.Model):
     questions = relationship('QuizQuestion', backref='quiz', cascade='all, delete-orphan')
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
 
+    def to_dict(self):
+        result = {}
+        #result = {collunm.name: getattr(self, collunm.name) for collunm in self.__table__.columns}
+        result["id"] = self._id
+        result["name"] = self.name
+        # result["questions"] = {_: {"text": q.text,
+        #                            "answers":
+        #                                {__:
+        #                                     {"text": answer.text,
+        #                                      "correct": answer.correct}
+        #                                 }
+        #                            } for _, q in enumerate(self.questions)
+        #                        for __, answer in enumerate(q.answers)}
+
+        result["questions"] = [
+            {"question": q.text,
+             "answer": [
+                 {'text': a.text,
+                  "correct": a.correct}
+                 for a in q.answers]
+             }
+            for q in self.questions
+        ]
+
+        return result
+
     def __repr__(self):
         return '<Quiz(id={0._id}, name={0.name})>'.format(self)
 
@@ -93,6 +119,9 @@ class QuizQuestion(db.Model):
     #Foreignkeys
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
     answers = relationship('QuizAnswer', backref='question', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return 'QuizQuestion(id={0._id})'.format(self)
 
 
 class QuizResults(db.Model):

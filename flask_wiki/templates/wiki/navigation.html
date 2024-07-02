@@ -47,7 +47,7 @@
 {#            </li>#}
 
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('wiki.show_quizzs') }}">
+                <a class="nav-link" href="{{ url_for('wiki.my_quizs') }}">
                   {{ _('Мои тесты') }}</a>
               </li>
 
@@ -63,7 +63,7 @@
                 </div>
                 <div class="numers_of_card_container">
                   <span class="numers_of_card">
-                    {{ 0 }}
+                    {{ active_quiz }}
                   </span>
                 </div>
               </li>

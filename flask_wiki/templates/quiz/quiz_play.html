@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тест</title>
+  <link rel="stylesheet" href="{{ url_for('wiki.static', filename='css/quiz/quiz_play.css') }}"/>
+</head>
+<body>
+  <div class="app">
+    <h1>Simpleq quiz</h1>
+    <div class="quiz">
+      <h2 id="question"> Question</h2>
+      <div id="answer-buttons">
+        <button class="btn">Answer 1</button>
+        <button class="btn">Answer 2</button>
+        <button class="btn">Answer 3</button>
+        <button class="btn">Answer 4</button>
+      </div>
+      <button id="next-btn"> Далее</button>
+    </div>
+  </div>
+</body>
+  <script type="text/javascript">
+      let quiz = {{ quiz | tojson | safe }};
+      let indexUrl = {{ url_for("wiki.index") }}
+  </script>
+  <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/quiz_play.js') }}"></script>
+
+</html>
