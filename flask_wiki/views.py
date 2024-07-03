@@ -393,7 +393,11 @@ def assinged_user_list(quiz_id):
 @can_read_permission
 def quiz_play(quiz_id):
     from sqlalchemy.orm import joinedload
-    quiz = Quiz.query.options(joinedload(Quiz.questions)).get_or_404(quiz_id)
+    #нужно было ддо применения lazy="dinamic"
+    #quiz = Quiz.query.options(joinedload(Quiz.questions)).get_or_404(quiz_id)
+
+    quiz = Quiz.query.get_or_404(quiz_id)
+
     quiz_dict = quiz.to_dict()
 
     return render_template('quiz/quiz_play.html', quiz=quiz_dict)
