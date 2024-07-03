@@ -1,5 +1,5 @@
 from examples.app import app
-from examples.app import create_app
+#from examples.app import create_app
 import logging
 from dotenv import load_dotenv
 from flask_wiki.context_processor import inject_quiz_nums_context
@@ -7,6 +7,6 @@ from flask_wiki.context_processor import inject_quiz_nums_context
 
 if __name__ == '__main__':
     load_dotenv()
-    logging.basicConfig(level=logging.DEBUG)
-    app = create_app()
+    #logging.basicConfig(level=logging.DEBUG)
+    #app = create_app()
     app.run()
