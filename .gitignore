@@ -134,3 +134,4 @@ data
 *.7z
 /ssl
 init_letcript.sh
+migrations
