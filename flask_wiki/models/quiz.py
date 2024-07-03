@@ -63,7 +63,10 @@ class Quiz(db.Model):
                                overlaps="assigned_to,quizzes")
 
     #One-to-many
-    questions = relationship('QuizQuestion', backref='quiz', cascade='all, delete-orphan')
+    questions = relationship('QuizQuestion',
+                             backref='quiz',
+                             lazy='dynamic',
+                             cascade='all, delete-orphan')
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
 
     def to_dict(self):
@@ -71,14 +74,6 @@ class Quiz(db.Model):
         #result = {collunm.name: getattr(self, collunm.name) for collunm in self.__table__.columns}
         result["id"] = self._id
         result["name"] = self.name
-        # result["questions"] = {_: {"text": q.text,
-        #                            "answers":
-        #                                {__:
-        #                                     {"text": answer.text,
-        #                                      "correct": answer.correct}
-        #                                 }
-        #                            } for _, q in enumerate(self.questions)
-        #                        for __, answer in enumerate(q.answers)}
 
         result["questions"] = [
             {"question": q.text,
@@ -120,7 +115,10 @@ class QuizQuestion(db.Model):
 
     #Foreignkeys
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
-    answers = relationship('QuizAnswer', backref='question', cascade='all, delete-orphan')
+    answers = relationship('QuizAnswer',
+                           backref='question',
+                           lazy='dynamic',
+                           cascade='all, delete-orphan')
 
     def __repr__(self):
         return 'QuizQuestion(id={0._id})'.format(self)
@@ -148,3 +146,13 @@ class QuestonAnswerResult(db.Model):
     question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
     answer_id = Column(String, ForeignKey('quiz_answers._id'), nullable=False)
     correct = Column(Boolean, nullable=False)
+
+    #Relationships
+    question_instance = relationship("QuizQuestion", #for get inctanse not a just id
+                                        lazy="joined",
+                                        foreign_keys=[question_id])
+
+    answer_instance = relationship("QuizAnswer", # for get inctanse not a just id
+                                   # lazy="joined",
+                                   foreign_keys=[answer_id])
+

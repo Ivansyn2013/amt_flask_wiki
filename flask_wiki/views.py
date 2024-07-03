@@ -443,14 +443,8 @@ def show_results():
 @can_edit_permission
 def result_details(result_id):
     from flask_wiki.models import User, QuizResults, QuestonAnswerResult
-    from sqlalchemy.orm import joinedload
 
-    # results = QuizResults.query.options(joinedload(QuestonAnswerResult)).filter(QuizResults._id == result_id).all()
-    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults.user_id ==
-                                                                           current_user._id).all()
-
+    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id).all()
     return render_template("quiz/result_details.html",
-                           # results=results,
-                           qestion=res)
-
-
+                           question=res,
+                           )

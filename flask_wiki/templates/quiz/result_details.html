@@ -2,32 +2,29 @@
 {% block content %}
 
 <div class="col-md-8 offset-md-2">
-  <form class="form" action="{{ url_for("wiki.assinged_user_list", quiz_id=quiz_id) }}" method="POST">
     <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
-
-      {% for res in results %}
+      {% for q in question %}
         dd
           <li>
-            <a href="" class="">{{ res._id }}</a>
+            <a href="" class="">{{ q._id }}</a>
           </li>
-       {% endfor %}
         </li>
-    {% for q in qestion%}
-          Вопроса
-          <li>
-            {{ q.question_id }}
-          </li>
-          Ответ
-          <li>
-            {{ q.answer_id }}
-          </li>
-        Результат
-      <li>
-            {{ q.correct }}
-          </li>
 
+          <li>
+          Вопрос
+          </li>
+            {{ q.question_instance.text }}
+
+          <li>
+          Ответ
+          </li>
+        {{ q.answer_instance.text }}
+
+      <li>
+        Результат
+          </li>
+      {{ q.correct }}
        {% endfor %}
 
-  </form>
 </div>
 {% endblock %}

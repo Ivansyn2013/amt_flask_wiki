@@ -9,7 +9,8 @@
 
       {% for res in results %}
           <li>
-              <a href="{{ url_for("wiki.result_details", result_id=res._id) }}" class="ml-5">{{ res }}</a>
+              <a href="{{ url_for("wiki.result_details", result_id=res._id) }}" class="ml-5">
+                {{ res }} Дата проведения {{ res.created_at }}</a>
           </li>
        {% endfor %}
         </li>
