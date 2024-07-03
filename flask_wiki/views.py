@@ -348,7 +348,7 @@ def create_quiz():
 
 
 @blueprint.route('/myquiz', methods=['GET'])
-@can_edit_permission
+@can_read_permission
 def my_quizs():
     '''Show assigned quizs'''
     from flask_wiki.models import User
