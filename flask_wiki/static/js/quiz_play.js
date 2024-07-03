@@ -46,7 +46,9 @@
 //     },
 // ];
 
-let questions = quiz.questions
+let questions = quiz.questions;
+let quizResult = [];
+// let quizUrl = 'wiki/quiz_pass'
 
 const questionElement = document.getElementById('question') //h2
 const answerButton = document.getElementById('answer-buttons') //div
@@ -66,6 +68,8 @@ function showQuestion() {
     resetState();
     let currentQuestion = questions[curretQuestionIndex];
     let questionNo = curretQuestionIndex + 1;
+    let question_id = currentQuestion.question_id;
+
     questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
     currentQuestion.answer.forEach(answer =>{
         const button = document.createElement('button')
@@ -75,14 +79,27 @@ function showQuestion() {
         if (answer.correct){
              button.dataset.correct = answer.correct;
         }
+        button.question_id = question_id
+        button.answer_id = answer.answer_id
         button.addEventListener("click", selectAnswer)
 
     })
 
 }
 
-function sendResult(){
-
+function sendResult(data){
+    fetch(quizUrl, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(data)
+    })
+        .then(responce => responce.json()
+            .then(data => {
+                console.log(data);
+            }))
 };
 
 function resetState() {
@@ -95,18 +112,29 @@ function resetState() {
 function selectAnswer(event) {
     const selectedBtn = event.target;
     const isCorrect = selectedBtn.dataset.correct === "true";
+    oneResult = {
+        "quiz_id" : quiz.id,
+        "question_id" : selectedBtn.question_id,
+        "answer_id" : selectedBtn.answer_id,
+        "correct" : "",
+    }
+
     if (isCorrect) {
-        selectedBtn.classList.add("correct")
+        selectedBtn.classList.add("neutral");
+        oneResult.correct = true
         score++;
     }else {
-        selectedBtn.classList.add("incorrect")
+        selectedBtn.classList.add("neutral")
+        oneResult.correct = false
     }
     Array.from(answerButton.children).forEach(button=>{
         if(button.dataset.correct === "true") {
-            button.classList.add("correct");
+            // button.classList.add("correct");
         }
         button.disabled = true;
     });
+
+    quizResult.push(oneResult)
     nextButton.style.display = "block";
 
 };
@@ -116,6 +144,7 @@ function showScore() {
     questionElement.innerHTML = `You score ${score} out of ${questions.length}!`
     nextButton.innerHTML = 'Завершить';
     nextButton.style.display = 'block';
+    sendResult(quizResult)
     nextButton.addEventListener('click', ()=>{
       location.assign(indexUrl);
     });

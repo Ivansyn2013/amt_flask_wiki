@@ -82,8 +82,10 @@ class Quiz(db.Model):
 
         result["questions"] = [
             {"question": q.text,
+             "question_id": q._id,
              "answer": [
-                 {'text': a.text,
+                 {"answer_id": a._id,
+                  "text": a.text,
                   "correct": a.correct}
                  for a in q.answers]
              }
@@ -135,3 +137,14 @@ class QuizResults(db.Model):
     #Foreign keys
     user_id = Column(String, ForeignKey('user._id'), nullable=False)
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
+
+class QuestonAnswerResult(db.Model):
+    """Table for save ques-qnswer pairs for result of quiz"""
+    __tablename__ = 'question_answer_results'
+    _id = Column(String, primary_key=True, default=uuid_to_str)
+
+    quiz_result_id = Column(String, ForeignKey('quiz_results._id'), nullable=False)
+
+    question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
+    answer_id = Column(String, ForeignKey('quiz_answers._id'), nullable=False)
+    correct = Column(Boolean, nullable=False)

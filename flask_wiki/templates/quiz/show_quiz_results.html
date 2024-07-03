@@ -1,0 +1,19 @@
+{% extends 'quiz/create_quiz.html' %}
+{% block content %}
+
+<div class="col-md-8 offset-md-2">
+    <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
+    {% for user in users %}
+      <li class="row-cols-2">
+        <label class="form-group" for="user">{{ user.first_name }} {{ user.last_name }}</label>
+
+      {% for res in results %}
+          <li>
+              <a href="{{ url_for("wiki.result_details", result_id=res._id) }}" class="ml-5">{{ res }}</a>
+          </li>
+       {% endfor %}
+        </li>
+    {% endfor %}
+
+</div>
+{% endblock %}

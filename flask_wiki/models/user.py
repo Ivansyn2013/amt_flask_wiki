@@ -35,6 +35,7 @@ class User(db.Model, UserMixin):
     assigned_quizs = relationship('Quiz',
                                   secondary=quiz.quizs_users_relation_table,
                                   backref="users",
+                                  lazy='dynamic',
                                   overlaps="assigned_to,quizzes")
 
     @property

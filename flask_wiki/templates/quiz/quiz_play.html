@@ -22,7 +22,8 @@
 </body>
   <script type="text/javascript">
       let quiz = {{ quiz | tojson | safe }};
-      let indexUrl = {{ url_for("wiki.index") }}
+      let indexUrl = {{ url_for("wiki.index") }};
+      let quizUrl = `{{ url_for("wiki.quiz_get_result") }}`;
   </script>
   <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/quiz_play.js') }}"></script>
 

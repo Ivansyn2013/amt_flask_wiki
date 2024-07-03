@@ -1,7 +1,13 @@
 from flask_wiki.models.user import User
 from .page import PageDb
 from .files_urls import FilesUrls
-from .quiz import Quiz, quizs_users_relation_table, QuizAnswer, QuizResults, QuizQuestion, Department
+from .quiz import (Quiz,
+                   quizs_users_relation_table,
+                   QuizAnswer,
+                   QuizResults,
+                   QuizQuestion,
+                   Department,
+                   QuestonAnswerResult)
 __all__ = [
     'User',
     'FilesUrls',
@@ -11,4 +17,5 @@ __all__ = [
     'QuizResults',
     'QuizQuestion',
     'Department',
+    'QuestonAnswerResult',
 ]

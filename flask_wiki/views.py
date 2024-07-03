@@ -15,7 +15,7 @@ from functools import wraps
 
 from babel import Locale
 from flask import (Blueprint, abort, current_app, flash, redirect,
-                   render_template, request, url_for)
+                   render_template, request, url_for, jsonify)
 from flask_babelex import gettext as _
 from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
@@ -354,7 +354,6 @@ def my_quizs():
     from flask_wiki.models import User
     user = current_user
     list_quizs = Quiz.query.join(Quiz.assigned_to).filter(User._id == user._id)
-    quizs = user.assigned_quizs
     return render_template('quiz/my_quizzs.html', list_quizs=list_quizs)
 
 @blueprint.route('/quiz/<quiz_id>', methods=['GET'])
@@ -398,3 +397,60 @@ def quiz_play(quiz_id):
     quiz_dict = quiz.to_dict()
 
     return render_template('quiz/quiz_play.html', quiz=quiz_dict)
+
+@blueprint.route('/quiz_pass/', methods=['POST'])
+def quiz_get_result():
+    from flask_wiki.models import QuizResults, QuestonAnswerResult
+    data = request.json[0]
+
+    try:
+        quiz_results = QuizResults(
+            user_id=current_user._id,
+            quiz_id=data['quiz_id'],
+        )
+        db.session.add(quiz_results)
+        db.session.commit()
+
+        result_table = QuestonAnswerResult(
+            question_id=data['question_id'],
+            answer_id=data['answer_id'],
+            correct=data['correct'],
+            quiz_result_id=quiz_results._id,
+        )
+        db.session.add(result_table)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Error wtite in db quize results\n{e}")
+        return jsonify(500, "Error wtite in db quize results")
+
+    quiz = Quiz.query.get(data['quiz_id'])
+    print()
+    #current_user.assigned_quizs.filter(Quiz._id == quiz._id).delete()
+    # нужно удалить запись из назначенных
+    return jsonify(200, 'OK')
+
+@blueprint.route('/quiz/show_results', methods=['GET'])
+@can_edit_permission
+def show_results():
+    from flask_wiki.models import User, QuizResults
+    users = User.query.join(QuizResults)
+    results = QuizResults.query.join(User).filter(QuizResults.user_id == User._id).all()
+
+    return render_template("quiz/show_quiz_results.html", users=users, results=results)
+
+@blueprint.route('/quiz/result_details/<result_id>', methods=['GET'])
+@can_edit_permission
+def result_details(result_id):
+    from flask_wiki.models import User, QuizResults, QuestonAnswerResult
+    from sqlalchemy.orm import joinedload
+
+    # results = QuizResults.query.options(joinedload(QuestonAnswerResult)).filter(QuizResults._id == result_id).all()
+    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults.user_id ==
+                                                                           current_user._id).all()
+
+    return render_template("quiz/result_details.html",
+                           # results=results,
+                           qestion=res)
+
+
