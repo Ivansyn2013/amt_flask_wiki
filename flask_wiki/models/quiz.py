@@ -21,6 +21,7 @@ quizs_users_relation_table = db.Table('quizs_users_relation_table',
                                       db.Column('user_id', String, db.ForeignKey('user._id'))
                                       )
 
+
 class Quiz(db.Model):
     '''
     created_at - создан кем, задается однажды
@@ -43,26 +44,25 @@ class Quiz(db.Model):
     threshold = Column(Integer, nullable=False)
     url = Column(String, nullable=True)
 
-
-    #Foreignkey
+    # Foreignkey
 
     created_by = Column(String, ForeignKey('user._id'),
                         nullable=False,
                         )
-    #очень долго разбирался в рещультате такая конструкция позволяет
+    # очень долго разбирался в рещультате такая конструкция позволяет
     # подгуржать данные и передавать в шаблон created_by_userс view quiz_details
     created_by_user = db.relationship('User', foreign_keys=[created_by],
-                                      #back_populates='created_quizs',
+                                      # back_populates='created_quizs',
                                       primaryjoin="User._id == Quiz.created_by")
     update_by = Column(String, ForeignKey('user._id'), nullable=True, default=None)
 
-    #Many-to-Many
+    # Many-to-Many
     assigned_to = relationship('User',
                                secondary=quizs_users_relation_table,
                                backref="quizzes",
                                overlaps="assigned_to,quizzes")
 
-    #One-to-many
+    # One-to-many
     questions = relationship('QuizQuestion',
                              backref='quiz',
                              lazy='dynamic',
@@ -71,7 +71,7 @@ class Quiz(db.Model):
 
     def to_dict(self):
         result = {}
-        #result = {collunm.name: getattr(self, collunm.name) for collunm in self.__table__.columns}
+        # result = {collunm.name: getattr(self, collunm.name) for collunm in self.__table__.columns}
         result["id"] = self._id
         result["name"] = self.name
 
@@ -92,6 +92,7 @@ class Quiz(db.Model):
     def __repr__(self):
         return '<Quiz(id={0._id}, name={0.name})>'.format(self)
 
+
 class QuizAnswer(db.Model):
     __tablename__ = 'quiz_answers'
 
@@ -102,8 +103,9 @@ class QuizAnswer(db.Model):
     text = Column(TEXT, nullable=False)
     correct = Column(Boolean, nullable=False, default=False)
 
-    #ForeignKey O-M
+    # ForeignKey O-M
     question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
+
 
 class QuizQuestion(db.Model):
     __tablename__ = 'quiz_questions'
@@ -113,7 +115,7 @@ class QuizQuestion(db.Model):
 
     text = Column(TEXT, nullable=False)
 
-    #Foreignkeys
+    # Foreignkeys
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
     answers = relationship('QuizAnswer',
                            backref='question',
@@ -132,12 +134,17 @@ class QuizResults(db.Model):
     result = Column(Integer, nullable=True)
     active = Column(Boolean, nullable=False, default=True)
 
-    #Foreign keys
+    # Foreign keys
     user_id = Column(String, ForeignKey('user._id'), nullable=False)
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
 
+
 class QuestonAnswerResult(db.Model):
-    """Table for save ques-qnswer pairs for result of quiz"""
+    """Table for save ques-qnswer pairs for result of quiz
+    TODO: Нашео ошибку. Модель выдает конкретные вопросы и ответы,
+    а подразумевались их списки, относитлеьно конкретного квизз возмоно
+    надо будет по другой таблице полазить"""
+
     __tablename__ = 'question_answer_results'
     _id = Column(String, primary_key=True, default=uuid_to_str)
 
@@ -147,12 +154,11 @@ class QuestonAnswerResult(db.Model):
     answer_id = Column(String, ForeignKey('quiz_answers._id'), nullable=False)
     correct = Column(Boolean, nullable=False)
 
-    #Relationships
-    question_instance = relationship("QuizQuestion", #for get inctanse not a just id
-                                        lazy="joined",
-                                        foreign_keys=[question_id])
+    # Relationships
+    question_instance = relationship("QuizQuestion",  # for get inctanse not a just id
+                                     lazy="joined",
+                                     foreign_keys=[question_id])
 
-    answer_instance = relationship("QuizAnswer", # for get inctanse not a just id
+    answer_instance = relationship("QuizAnswer",  # for get inctanse not a just id
                                    # lazy="joined",
                                    foreign_keys=[answer_id])
-
