@@ -141,7 +141,7 @@ class QuizResults(db.Model):
 
 class QuestonAnswerResult(db.Model):
     """Table for save ques-qnswer pairs for result of quiz
-    TODO: Нашео ошибку. Модель выдает конкретные вопросы и ответы,
+    TODO: Нашел ошибку. Модель выдает конкретные вопросы и ответы,
     а подразумевались их списки, относитлеьно конкретного квизз возмоно
     надо будет по другой таблице полазить"""
 
@@ -156,9 +156,9 @@ class QuestonAnswerResult(db.Model):
 
     # Relationships
     question_instance = relationship("QuizQuestion",  # for get inctanse not a just id
-                                     lazy="joined",
-                                     foreign_keys=[question_id])
+                                     lazy="select",
+                                     foreign_keys=[question_id,])
 
     answer_instance = relationship("QuizAnswer",  # for get inctanse not a just id
                                    # lazy="joined",
-                                   foreign_keys=[answer_id])
+                                   foreign_keys=[answer_id,])

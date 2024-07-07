@@ -40,6 +40,15 @@ blueprint = Blueprint(
 
 # PERMISSIONS
 # ===========
+def check_user_group(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        permission = current_user
+        if not permission:
+            abort(403)
+    return wrapper
+
+
 def can_read_permission(func):
     """Check Reading Permission."""
     @wraps(func)
@@ -448,7 +457,7 @@ def show_results():
 def result_details(result_id):
     from flask_wiki.models import User, QuizResults, QuestonAnswerResult
 
-    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id).all()
+    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id).first()
     return render_template("quiz/result_details.html",
                            question=res,
                            )

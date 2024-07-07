@@ -117,12 +117,6 @@ def registration():
     return render_template('auth/registration.html', form=form, error=error)
 
 
-@user_auth.route('/list/', endpoint='list')
-def user_show():
-    data = User.query.all()
-    return render_template_string('{% for user in users %} {{ user }} {% endfor %}', users=data)
-
-
 @user_auth.route("/logout/", endpoint="logout")
 @login_required
 def logout():

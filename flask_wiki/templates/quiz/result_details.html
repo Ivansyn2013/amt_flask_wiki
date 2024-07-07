@@ -3,8 +3,9 @@
 
 <div class="col-md-8 offset-md-2">
     <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
-      {% for q in question %}
-        dd
+      <h2>Название теста и дата {{ question.quiz_result_id }} {{ question.quiz_result_id.name }} </h2>
+  {% for q in question.question_instance.query.all() %}
+
           <li>
             <a href="" class="">{{ q._id }}</a>
           </li>
@@ -13,17 +14,18 @@
           <li>
           Вопрос
           </li>
-            {{ q.question_instance.text }}
+            {{ q.text }}
 
           <li>
           Ответ
           </li>
-        {{ q.answer_instance.text }}
+        {{ question.answer_instance.query.filter_by(question_id=q._id).first().text }}
 
       <li>
         Результат
           </li>
-      {{ q.correct }}
+        {{ question.answer_instance.query.filter_by(question_id=q._id).first().correct }}
+
        {% endfor %}
 
 </div>
