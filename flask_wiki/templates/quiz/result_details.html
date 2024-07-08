@@ -1,32 +1,32 @@
 {% extends 'quiz/create_quiz.html' %}
 {% block content %}
 
-<div class="col-md-8 offset-md-2">
+  <div class="col-md-8 offset-md-2">
     <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
-      <h2>Название теста и дата {{ question.quiz_result_id }} {{ question.quiz_result_id.name }} </h2>
-  {% for q in question.question_instance.query.all() %}
-
-          <li>
-            <a href="" class="">{{ q._id }}</a>
-          </li>
-        </li>
-
-          <li>
-          Вопрос
-          </li>
-            {{ q.text }}
-
-          <li>
-          Ответ
-          </li>
-        {{ question.answer_instance.query.filter_by(question_id=q._id).first().text }}
+    <h2>Название теста: {{ question.quiz_results.quiz.name }}</h2>
+    <h3>Дата проведения: {{ question.quiz_results.created_at }}</h3>
+    <h3>Результат: правильных ответов
+      {{ question.answer_instance.query.filter_by(correct=True).all() | length }}
+      из
+      {{ question.question_instance.query.all() | length }} </h3>
+    {% for i, q in enumerate(question.question_instance.query.all()) %}
 
       <li>
-        Результат
-          </li>
-        {{ question.answer_instance.query.filter_by(question_id=q._id).first().correct }}
+        Вопрос {{ i }}
+      </li>
+      {{ q.text }}
 
-       {% endfor %}
+      <li>
+        Ответ {{ i }}
+      </li>
+      {{ question.answer_instance.query.filter_by(question_id=q._id).first().text }}
 
-</div>
+      <li>
+        Результат {{ i }}
+      </li>
+      {{ question.answer_instance.query.filter_by(question_id=q._id).first().correct }}
+
+    {% endfor %}
+
+  </div>
 {% endblock %}

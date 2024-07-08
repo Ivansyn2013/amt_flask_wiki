@@ -4,16 +4,19 @@
 <div class="col-md-8 offset-md-2">
     <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
     {% for user in users %}
-      <li class="row-cols-2">
-        <label class="form-group" for="user">{{ user.first_name }} {{ user.last_name }}</label>
-
+         <h2> Имя пользователя
+           <span style="color: blue;" >{{ user.first_name }} {{ user.last_name }} </span>
+         </h2>
       {% for res in results %}
-          <li>
+
               <a href="{{ url_for("wiki.result_details", result_id=res._id) }}" class="ml-5">
-                {{ res }} Дата проведения {{ res.created_at }}</a>
+               {{ res.quiz.name }}
+              </a>
+          <li>
+                  Дата проведения {{ res.created_at }}
           </li>
+
        {% endfor %}
-        </li>
     {% endfor %}
 
 </div>

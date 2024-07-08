@@ -40,14 +40,19 @@ blueprint = Blueprint(
 
 # PERMISSIONS
 # ===========
-def check_user_group(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        permission = current_user
-        if not permission:
-            abort(403)
-    return wrapper
-
+def check_user_roles(availabel_roles):
+    '''Check permission on user role '''
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if not current_user.roles:
+                abort(403)
+            permission = any(role in current_user.roles for role in availabel_roles)
+            if not permission:
+                abort(403)
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
 
 def can_read_permission(func):
     """Check Reading Permission."""
@@ -444,6 +449,7 @@ def quiz_get_result():
     return jsonify(200, 'OK')
 
 @blueprint.route('/quiz/show_results', methods=['GET'])
+@check_user_roles(['all-seeing'])
 @can_edit_permission
 def show_results():
     from flask_wiki.models import User, QuizResults
@@ -452,12 +458,14 @@ def show_results():
 
     return render_template("quiz/show_quiz_results.html", users=users, results=results)
 
+
 @blueprint.route('/quiz/result_details/<result_id>', methods=['GET'])
+@check_user_roles(['all-seeing'])
 @can_edit_permission
 def result_details(result_id):
     from flask_wiki.models import User, QuizResults, QuestonAnswerResult
 
-    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id).first()
+    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id).one_or_none()
     return render_template("quiz/result_details.html",
                            question=res,
                            )

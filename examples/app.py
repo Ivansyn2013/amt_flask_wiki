@@ -67,6 +67,8 @@ def create_app(test_config=None): # не забудь поменять
     admin = Admin(app, name='amt_wiki', template_mode='bootstrap3')
     admin.add_view(MyAdminView(User, db.session))
 
+    app.jinja_env.globals.update(enumerate=enumerate)
+
     app.context_processor(inject_quiz_nums_context)
 
     @babel.localeselector

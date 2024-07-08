@@ -137,6 +137,7 @@ class QuizResults(db.Model):
     # Foreign keys
     user_id = Column(String, ForeignKey('user._id'), nullable=False)
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
+    quiz = relationship('Quiz', foreign_keys=[quiz_id])
 
 
 class QuestonAnswerResult(db.Model):
@@ -162,3 +163,4 @@ class QuestonAnswerResult(db.Model):
     answer_instance = relationship("QuizAnswer",  # for get inctanse not a just id
                                    # lazy="joined",
                                    foreign_keys=[answer_id,])
+    quiz_results = relationship("QuizResults", foreign_keys=[quiz_result_id])

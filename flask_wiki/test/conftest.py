@@ -16,6 +16,7 @@ PASS = os.getenv('PGPASSWORD')
 PORT = os.getenv('PGPORT')
 
 
+
 class TestConfig:
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://test_user:test_password@localhost:5433/test_db'
@@ -27,6 +28,7 @@ class TestConfig:
 @pytest.fixture(scope='module')
 def test_client():
     app = create_app(test_config='test_mode')
+    app.config.update({'WTF_CSRF_ENABLED': False})
 
     testing_client = app.test_client()
 
@@ -39,7 +41,7 @@ def test_client():
 @pytest.fixture(scope='module')
 def init_database():
     app = create_app(test_config='test_mode')
-
+    app.config.update({'WTF_CSRF_ENABLED': False})
     user_fields = get_obligatory_fields(User)
     user_fields.remove('_password')
     user_list = []
@@ -60,7 +62,8 @@ def init_database():
 
             user_data = dict(zip(user_fields, user_data))
             user = User(**user_data)
-            User.password = '123'
+            user.password = '123'
+            user.email = f'test@{i}test.ru'
             user_list.append(user)
 
         db.session.add_all(user_list)
