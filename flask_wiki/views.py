@@ -319,6 +319,16 @@ def list_pages_by_moduls():
     list_pages = r.index_by_tag(tag)
     return render_template('wiki/list_pages.html', list_pages=list_pages)
 
+@blueprint.route('/departments', methods=['GET'])
+@can_read_permission
+def list_pages_by_depaertments():
+
+    tag = 'отдел'
+    r = current_wiki
+    list_pages = r.index_by_tag(tag)
+    return render_template('wiki/list_pages.html', list_pages=list_pages)
+
+
 @blueprint.route('/show_quizzs', methods=['GET'])
 @can_edit_permission
 def show_quizzs():
@@ -443,9 +453,7 @@ def quiz_get_result():
         return jsonify(500, "Error wtite in db quize results")
 
     quiz = Quiz.query.get(data['quiz_id'])
-    print()
-    #current_user.assigned_quizs.filter(Quiz._id == quiz._id).delete()
-    # нужно удалить запись из назначенных
+    current_user.assigned_quizs.remove(quiz)
     return jsonify(200, 'OK')
 
 @blueprint.route('/quiz/show_results', methods=['GET'])

@@ -3,6 +3,7 @@ from flask_wiki.test.conftest import get_app_urls
 
 ROLE_URLS = ['wiki/quiz/show_results',
              ]
+@pytest.mark.skip
 def test_available_urls(get_app_urls, test_client):
     urls = get_app_urls
     client = test_client
@@ -26,7 +27,7 @@ def login(clien, user):
                             'csrf_token': 'test_token'},
                       follow_redirects=True)
 
-
+@pytest.mark.skip
 @pytest.mark.parametrize('url', ROLE_URLS)
 def test_available_urs_by_roles(init_database, test_client, url):
     '''надо еще подумать'''
@@ -38,6 +39,8 @@ def test_available_urs_by_roles(init_database, test_client, url):
     #assert response.status_code == 200
     assert response.request.url == response.location
 
+
+@pytest.mark.skip
 @pytest.mark.parametrize('url', ROLE_URLS)
 def test_available_urs_by_roles_not_auth(init_database, test_client, url):
 

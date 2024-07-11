@@ -105,6 +105,9 @@ class QuizAnswer(db.Model):
 
     # ForeignKey O-M
     question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
+    question_answer_result = relationship('QuestonAnswerResult',
+                                         lazy='dynamic',
+                                         back_populates='answer_instance')
 
 
 class QuizQuestion(db.Model):
@@ -122,6 +125,11 @@ class QuizQuestion(db.Model):
                            lazy='dynamic',
                            cascade='all, delete-orphan')
 
+    #relations
+    question_answer_result = relationship('QuestonAnswerResult',
+                                         lazy='dynamic',
+                                         back_populates='question_instance')
+
     def __repr__(self):
         return 'QuizQuestion(id={0._id})'.format(self)
 
@@ -138,6 +146,8 @@ class QuizResults(db.Model):
     user_id = Column(String, ForeignKey('user._id'), nullable=False)
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
     quiz = relationship('Quiz', foreign_keys=[quiz_id])
+
+    question_answers_results = relationship('QuestonAnswerResult', back_populates='quiz_results')
 
 
 class QuestonAnswerResult(db.Model):
@@ -157,10 +167,11 @@ class QuestonAnswerResult(db.Model):
 
     # Relationships
     question_instance = relationship("QuizQuestion",  # for get inctanse not a just id
-                                     lazy="select",
-                                     foreign_keys=[question_id,])
+                                     lazy="joined",
+                                     back_populates='question_answer_result')
 
     answer_instance = relationship("QuizAnswer",  # for get inctanse not a just id
-                                   # lazy="joined",
-                                   foreign_keys=[answer_id,])
-    quiz_results = relationship("QuizResults", foreign_keys=[quiz_result_id])
+                                   lazy="joined",
+                                   back_populates='question_answer_result')
+
+    quiz_results = relationship("QuizResults", back_populates='question_answers_results')

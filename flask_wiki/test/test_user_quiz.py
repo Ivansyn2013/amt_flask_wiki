@@ -8,7 +8,7 @@ def test_user_quiz_nums(init_database, create_quiz):
     assert quiz_nums == 9
 
 
-def test_quiz_assigned_delete(init_database, create_quiz):
+def test_quiz_assigned_delete(init_database):
     user = init_database
     all_quizs = len(Quiz.query.all())
     quiz_list = user.assigned_quizs.all()
@@ -20,3 +20,8 @@ def test_quiz_assigned_delete(init_database, create_quiz):
     change_all_quizs = len(Quiz.query.all())
     assert len(user.assigned_quizs.all()) == len(quiz_list) - 1
     assert change_all_quizs == all_quizs
+
+
+def test_quizresult(init_database):
+    user = init_database
+    pass
