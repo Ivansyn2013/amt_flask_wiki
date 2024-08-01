@@ -86,4 +86,4 @@ def create_app(test_config=None): # не забудь поменять
     return app
 
 #app = create_app(test_config='test_mode')
-app = create_app() #Deploy setting
+#app = create_app() #Deploy setting

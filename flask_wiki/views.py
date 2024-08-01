@@ -428,32 +428,38 @@ def quiz_play(quiz_id):
 
 @blueprint.route('/quiz_pass/', methods=['POST'])
 def quiz_get_result():
-    from flask_wiki.models import QuizResults, QuestonAnswerResult
-    data = request.json[0]
+    """Get json from front and create quiz results"""
+    from flask_wiki.models import QuizResults, QuestionAnswerResult
+    data_list = request.json
+    quiz_id = data_list[0]['quiz_id']
 
     try:
         quiz_results = QuizResults(
             user_id=current_user._id,
-            quiz_id=data['quiz_id'],
+            quiz_id=quiz_id,
         )
         db.session.add(quiz_results)
         db.session.commit()
 
-        result_table = QuestonAnswerResult(
-            question_id=data['question_id'],
-            answer_id=data['answer_id'],
-            correct=data['correct'],
-            quiz_result_id=quiz_results._id,
-        )
-        db.session.add(result_table)
-        db.session.commit()
+        for data in data_list:
+            result_table = QuestionAnswerResult(
+                question_id=data['question_id'],
+                answer_id=data['answer_id'],
+                correct=data['correct'],
+                quiz_result_id=quiz_results._id,
+            )
+            db.session.add(result_table)
+            db.session.commit()
+
     except SQLAlchemyError as e:
         db.session.rollback()
         logger.error(f"Error wtite in db quize results\n{e}")
         return jsonify(500, "Error wtite in db quize results")
 
-    quiz = Quiz.query.get(data['quiz_id'])
+    quiz = Quiz.query.get(quiz_id)
     current_user.assigned_quizs.remove(quiz)
+    db.session.commit()
+
     return jsonify(200, 'OK')
 
 @blueprint.route('/quiz/show_results', methods=['GET'])
@@ -471,9 +477,10 @@ def show_results():
 @check_user_roles(['all-seeing'])
 @can_edit_permission
 def result_details(result_id):
-    from flask_wiki.models import User, QuizResults, QuestonAnswerResult
+    from flask_wiki.models import User, QuizResults, QuestionAnswerResult
 
-    res = QuestonAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id).one_or_none()
+    res = QuestionAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id)
+    #res = QuestonAnswerResult.query.get(result_id)
     return render_template("quiz/result_details.html",
-                           question=res,
+                           questions=res,
                            )

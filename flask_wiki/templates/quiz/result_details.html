@@ -3,29 +3,29 @@
 
   <div class="col-md-8 offset-md-2">
     <input type="text" name="quiz_id" value="{{ quiz_id }}" style="display: none">
-    <h2>Название теста: {{ question.quiz_results.quiz.name }}</h2>
-    <h3>Дата проведения: {{ question.quiz_results.created_at }}</h3>
+    <h2>Название теста: {{ questions.first().quiz_results.quiz.name }}</h2>
+    <h3>Дата проведения: {{ questions.first().quiz_results.created_at }}</h3>
     <h3>Результат: правильных ответов
-      {{ question.answer_instance.query.filter_by(correct=True).all() | length }}
+      {{ questions.filter(correct==True).all() | length }}
       из
-      {{ question.question_instance.query.all() | length }} </h3>
-    {% for i, q in enumerate(question.question_instance.query.all()) %}
+      {{ questions.all() | length }} </h3>
+    {% for i, q in enumerate(questions) %}
 
       <li>
         Вопрос {{ i }}
       </li>
-      {{ q.text }}
+      {{ q.question_instance.text }}
 
       <li>
         Ответ {{ i }}
       </li>
-      {{ question.answer_instance.query.filter_by(question_id=q._id).first().text }}
+      {{ q.answer_instance.text }}
 
       <li>
         Результат {{ i }}
       </li>
-      {{ question.answer_instance.query.filter_by(question_id=q._id).first().correct }}
-
+      {{ q.answer_instance.correct }}
+      <hr>
     {% endfor %}
 
   </div>

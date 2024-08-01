@@ -17,8 +17,10 @@ from datetime import datetime
 from flask_wiki.models.departments import Department
 
 quizs_users_relation_table = db.Table('quizs_users_relation_table',
-                                      db.Column('quiz_id', String, db.ForeignKey('quiz._id')),
-                                      db.Column('user_id', String, db.ForeignKey('user._id'))
+                                      db.Column('quiz_id', String, db.ForeignKey('quiz._id',
+                                                                                 ondelete='CASCADE')),
+                                      db.Column('user_id', String, db.ForeignKey('user._id',
+                                                                                 ondelete='CASCADE')),
                                       )
 
 
@@ -60,7 +62,9 @@ class Quiz(db.Model):
     assigned_to = relationship('User',
                                secondary=quizs_users_relation_table,
                                backref="quizzes",
-                               overlaps="assigned_to,quizzes")
+                               overlaps="assigned_to,quizzes",
+                               #cascade='all, delete'
+                               )
 
     # One-to-many
     questions = relationship('QuizQuestion',
@@ -105,9 +109,10 @@ class QuizAnswer(db.Model):
 
     # ForeignKey O-M
     question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
-    question_answer_result = relationship('QuestonAnswerResult',
+    question_answer_result = relationship('QuestionAnswerResult',
                                          lazy='dynamic',
-                                         back_populates='answer_instance')
+                                         back_populates='answer_instance',
+                                         )
 
 
 class QuizQuestion(db.Model):
@@ -126,7 +131,7 @@ class QuizQuestion(db.Model):
                            cascade='all, delete-orphan')
 
     #relations
-    question_answer_result = relationship('QuestonAnswerResult',
+    question_answer_result = relationship('QuestionAnswerResult',
                                          lazy='dynamic',
                                          back_populates='question_instance')
 
@@ -147,10 +152,12 @@ class QuizResults(db.Model):
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
     quiz = relationship('Quiz', foreign_keys=[quiz_id])
 
-    question_answers_results = relationship('QuestonAnswerResult', back_populates='quiz_results')
+    question_answers_results = relationship('QuestionAnswerResult',
+                                            back_populates='quiz_results',
+                                            cascade='all, delete-orphan')
 
 
-class QuestonAnswerResult(db.Model):
+class QuestionAnswerResult(db.Model):
     """Table for save ques-qnswer pairs for result of quiz
     TODO: Нашел ошибку. Модель выдает конкретные вопросы и ответы,
     а подразумевались их списки, относитлеьно конкретного квизз возмоно
@@ -168,10 +175,14 @@ class QuestonAnswerResult(db.Model):
     # Relationships
     question_instance = relationship("QuizQuestion",  # for get inctanse not a just id
                                      lazy="joined",
-                                     back_populates='question_answer_result')
+                                     back_populates='question_answer_result',
+                                     uselist=False,
+                                     )
 
     answer_instance = relationship("QuizAnswer",  # for get inctanse not a just id
                                    lazy="joined",
-                                   back_populates='question_answer_result')
+                                   back_populates='question_answer_result',
+                                   uselist=False,
+                                   )
 
     quiz_results = relationship("QuizResults", back_populates='question_answers_results')

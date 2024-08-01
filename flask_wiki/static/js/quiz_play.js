@@ -129,7 +129,7 @@ function selectAnswer(event) {
     }
     Array.from(answerButton.children).forEach(button=>{
         if(button.dataset.correct === "true") {
-            // button.classList.add("correct");
+            button.classList.add("correct");
         }
         button.disabled = true;
     });
@@ -141,7 +141,7 @@ function selectAnswer(event) {
 
 function showScore() {
     resetState();
-    questionElement.innerHTML = `You score ${score} out of ${questions.length}!`
+    questionElement.innerHTML = `Количество правильных ответов ${score} из ${questions.length}!`
     nextButton.innerHTML = 'Завершить';
     nextButton.style.display = 'block';
     sendResult(quizResult)

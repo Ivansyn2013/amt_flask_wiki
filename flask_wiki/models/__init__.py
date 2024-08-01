@@ -7,7 +7,7 @@ from .quiz import (Quiz,
                    QuizResults,
                    QuizQuestion,
                    Department,
-                   QuestonAnswerResult)
+                   QuestionAnswerResult)
 __all__ = [
     'User',
     'FilesUrls',
@@ -17,5 +17,6 @@ __all__ = [
     'QuizResults',
     'QuizQuestion',
     'Department',
-    'QuestonAnswerResult',
+    'QuestionAnswerResult',
+    'quizs_users_relation_table',
 ]

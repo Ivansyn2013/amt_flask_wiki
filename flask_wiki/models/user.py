@@ -37,12 +37,13 @@ class User(db.Model, UserMixin):
 
     # Foreignkeys
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
-    # Many-to-many
+    # Many-to-many При двойной обозначении зависимости, при удалении , возникает ошибка
     assigned_quizs = relationship('Quiz',
                                   secondary=quiz.quizs_users_relation_table,
                                   backref="users",
                                   lazy='dynamic',
-                                  overlaps="assigned_to,quizzes")
+                                  overlaps="assigned_to, quizzes",
+                                  passive_deletes=True)
 
     @property
     def password(self):
