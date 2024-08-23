@@ -32,10 +32,11 @@ class User(db.Model, UserMixin):
     _password = Column(LargeBinary, nullable=False, default=flask_crypt.generate_password_hash('123'))
     email = Column(String(255), nullable=False, default="", server_default="")
     # role = Column(String(200), nullable=True, default="", server_default="")
-    USERS_ROLES = ["usual", "dep_chef", "all-seeing"]
+    USERS_ROLES = ["usual", "dep_chef", "all-seeing", "reviewer"]
     roles = Column(p_Array(String(50)), nullable=True)
 
     # Foreignkeys
+    reviews = relationship('Review', back_populates='reviewer', lazy='dynamic')
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
     # Many-to-many При двойной обозначении зависимости, при удалении , возникает ошибка
     assigned_quizs = relationship('Quiz',

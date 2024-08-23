@@ -2,29 +2,31 @@ version: "3.9"
 services:
   local_amt_db:
     container_name: local_amt_db
-#    image: postgres:13-alpine3.18
-    image: local_db_amtwiki
+    image: postgres:13-bookworm
+#    image: local_db_amtwiki
     volumes:
-      - './db_backs/2024-04-06-wiki-backup.sql:/db_backs/2024-04-06-wiki-backup.sql'
+      - './backs/2024-08-20-wiki-backup.sql:/backup/2024-08-20-wiki-backup.sql'
+      - './scripts/create_test_db.sh:/docker-entrypoint-initdb.d/init_db.sh'
       - './scripts:/db_entripoints'
     env_file:
       - .env
     ports:
       - "${PGPORT}:${PGPORT}"
 #    entrypoint:
-#      - '/db_entripoints/create_test_db.sh'
+#      - '/db_backs/2024-08-20-wiki-backup.sql'
 #    entrypoint:
 #      - '/db_entripoints/db_enry_point.sh'
 #    networks:
 #      - amt_education_net
-    #command:
-     # ["bash", "-c", "psql -U $PGUSER -d $PGDB -f /db_backs/2024-03-23-wiki-backup.sql"]
+#   command:
+#      ["bash", "-c", "psql -U $PGUSER -d $PGDB -f /db_backs/2024-03-23-wiki-backup.sql"]
+#      ["bash", "-c", "/db_entripoints/create_test_db.sh"]
 
-networks:
-  amt_education_net:
-    name: amt_education_net
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.18.0.0/16
+#networks:
+#  amt_education_net:
+#    name: amt_education_net
+#    driver: bridge
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 172.18.0.0/16

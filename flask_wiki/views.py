@@ -10,6 +10,7 @@
 """Views to respond to HTTP requests."""
 
 import glob
+import logging
 import os
 from functools import wraps
 
@@ -18,15 +19,15 @@ from flask import (Blueprint, abort, current_app, flash, redirect,
                    render_template, request, url_for, jsonify)
 from flask_babelex import gettext as _
 from flask_login import current_user
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from werkzeug.utils import secure_filename
 
-from flask_wiki.models import PageDb, Quiz, QuizQuestion, QuizAnswer
-
-from .api import Processor, current_wiki, get_wiki
-from .forms import EditorForm, NewPageForm, CreateQuizForm
 from db.init_db import db
-import logging
+from flask_wiki.forms.forms import EditorForm, NewPageForm, CreateQuizForm
+from flask_wiki.forms.review_form import ReviewForm
+from flask_wiki.models import PageDb, Quiz
+from .api import Processor, current_wiki, get_wiki
+from .models.review import Review
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,8 @@ blueprint = Blueprint(
 # PERMISSIONS
 # ===========
 def check_user_roles(availabel_roles):
-    '''Check permission on user role '''
+    """Check permission on user role """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -51,11 +53,15 @@ def check_user_roles(availabel_roles):
             if not permission:
                 abort(403)
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
+
 
 def can_read_permission(func):
     """Check Reading Permission."""
+
     @wraps(func)
     def decorated_view(*args, **kwargs):
         permission = current_app.config.get('WIKI_READ_VIEW_PERMISSION')()
@@ -64,20 +70,23 @@ def can_read_permission(func):
                 abort(403)
             return func(*args, **kwargs)
         return permission
+
     return decorated_view
 
 
 def can_edit_permission(func):
     """Check Edition Permission."""
+
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        #permission = current_app.config.get('WIKI_EDIT_VIEW_PERMISSION')()
+        # permission = current_app.config.get('WIKI_EDIT_VIEW_PERMISSION')()
         permission = current_user.is_authenticated and current_user.is_staff
         if isinstance(permission, bool):
             if not permission:
                 abort(403)
             return func(*args, **kwargs)
         return permission
+
     return decorated_view
 
 
@@ -107,9 +116,11 @@ def edit_path_list(path):
             [dict(ln=ln, path='_'.join((base_path, ln)))
              for ln in current_wiki.languages]))
 
+
 @blueprint.app_template_filter()
 def date_format(value, format=None):
     return value.strftime("%d-%m-%Y")
+
 
 # PROCESSORS
 # ==========
@@ -117,7 +128,7 @@ def date_format(value, format=None):
 def permission_processor():
     return dict(
         can_edit_wiki=current_app.config.get('WIKI_EDIT_UI_PERMISSION')(),
-        can_read_wiki= current_app.config.get('WIKI_READ_UI_PERMISSION')()
+        can_read_wiki=current_app.config.get('WIKI_READ_UI_PERMISSION')()
     )
 
 
@@ -126,6 +137,7 @@ def permission_processor():
 @blueprint.before_request
 def setWiki():
     get_wiki()
+
 
 @blueprint.before_request
 def check_auth():
@@ -137,10 +149,11 @@ def check_auth():
         flash("Данный пользователь требует подтверждения администратора", 'warning')
         return redirect(url_for('user_auth.login'))
 
+
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = current_app.config.get('WIKI_ALLOWED_EXTENSIONS')
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # ROUTES
@@ -154,7 +167,6 @@ def index():
 @blueprint.route('/<path:url>/')
 @can_read_permission
 def page(url):
-
     page = current_wiki.get_or_404(url)
     try:
         page_db = PageDb.query.filter_by(url=page.url).first()
@@ -163,16 +175,19 @@ def page(url):
             page_db = PageDb.query.filter_by(url=page.url).first()
 
         files_urls = page_db.file_url.all()
+        reviews = Review.query.filter_by(page_title=page.title).all()
     except Exception as error:
         current_app.logger.error(error)
         if type(error) is not AttributeError:
             flash('Ошибка подключения', 'error')
         files_urls = None
+        reviews = None
 
     return render_template(
         current_app.config.get('WIKI_PAGE_TEMPLATE'),
         page=page,
         files_urls=files_urls,
+        reviews=reviews
     )
 
 
@@ -180,9 +195,6 @@ def page(url):
 @can_edit_permission
 def edit(url):
     page = current_wiki.get(url)
-    #
-    # print(page)
-    #
     form = EditorForm(obj=page)
     if form.validate_on_submit():
         if not page:
@@ -204,19 +216,24 @@ def preview():
     data['html'], data['body'], data['meta'], data['toc'] = processor.process()
     return data['html']
 
+
 @blueprint.route('/page/delete/<path:url>')
 @can_edit_permission
 def delete_page(url):
+    """Удаление отключено"""
+    abort(403)
+
     if current_wiki.delete(url):
         flash(_('Page deleted'), category='success')
     else:
         flash(_('Could not delete page as it does not exist.'), category='error')
     return redirect(url_for('wiki.index'))
 
+
 @blueprint.route('/file/delete/<path:filename>')
 @can_edit_permission
 def delete_file(filename):
-    '''Удаление отключено'''
+    """Удаление отключено"""
     abort(403)
 
     path = os.path.join(current_app.config.get('WIKI_UPLOAD_FOLDER'), filename)
@@ -226,6 +243,7 @@ def delete_file(filename):
     except Exception as e:
         flash(_('Something went wrong. Could not delete file.'), category='error')
     return redirect(url_for('wiki.files'))
+
 
 @blueprint.route('/files', methods=['GET', 'POST'])
 @can_edit_permission
@@ -288,10 +306,11 @@ def create_page():
         form = NewPageForm(obj=request.args)
         pass
 
+
 @blueprint.route('/list_pages', methods=['GET'])
 @can_read_permission
 def list_pages():
-    '''Функция рисует список страниц, можно передать что-нить через реквест (request.args) и забрать по индексу'''
+    """Функция рисует список страниц, можно передать что-нить через реквест (request.args) и забрать по индексу"""
     r = current_wiki
 
     if 'page_tag' in request.args:
@@ -301,6 +320,7 @@ def list_pages():
         list_pages = r.index()
 
     return render_template('wiki/list_pages.html', list_pages=list_pages)
+
 
 @blueprint.route('/video', methods=['GET'])
 @can_read_permission
@@ -313,16 +333,15 @@ def video_player():
 @blueprint.route('/list_pages_by_moduls', methods=['GET'])
 @can_read_permission
 def list_pages_by_moduls():
-
     tag = 'модуль'
     r = current_wiki
     list_pages = r.index_by_tag(tag)
     return render_template('wiki/list_pages.html', list_pages=list_pages)
 
+
 @blueprint.route('/departments', methods=['GET'])
 @can_read_permission
 def list_pages_by_depaertments():
-
     tag = 'отдел'
     r = current_wiki
     list_pages = r.index_by_tag(tag)
@@ -335,10 +354,11 @@ def show_quizzs():
     list_quizs = Quiz.query.all()
     return render_template('quiz/show_quizzs.html', list_quizs=list_quizs)
 
+
 @blueprint.route('/create_q', methods=['GET', 'POST'])
 @can_edit_permission
 def create_quiz():
-    '''View for quiz creating with form'''
+    """View for quiz creating with form"""
     from flask_wiki.my_options import create_quiz_from_request
     from db.init_db import db
     import psycopg2
@@ -348,7 +368,7 @@ def create_quiz():
 
         return render_template('quiz/create_quiz.html', form=form)
 
-    elif request.method == 'POST': #and form.validate_on_submit():
+    elif request.method == 'POST':  # and form.validate_on_submit():
         data = request.json
         if data['questions'] == {}:
             return abort(400, "Ошибка теста. Не может быть только один вопрос")
@@ -374,11 +394,12 @@ def create_quiz():
 @blueprint.route('/myquiz', methods=['GET'])
 @can_read_permission
 def my_quizs():
-    '''Show assigned quizs'''
+    """Show assigned quizs"""
     from flask_wiki.models import User
     user = current_user
     list_quizs = Quiz.query.join(Quiz.assigned_to).filter(User._id == user._id)
     return render_template('quiz/my_quizzs.html', list_quizs=list_quizs)
+
 
 @blueprint.route('/quiz/<quiz_id>', methods=['GET'])
 @can_edit_permission
@@ -413,18 +434,20 @@ def assinged_user_list(quiz_id):
         else:
             flash("Произошла ошибка назначения пользователей", category='danger')
             return redirect(url_for('wiki.index'))
+
+
 @blueprint.route('/quiz_play/<quiz_id>', methods=['GET', 'POST'])
 @can_read_permission
 def quiz_play(quiz_id):
-    from sqlalchemy.orm import joinedload
-    #нужно было ддо применения lazy="dinamic"
-    #quiz = Quiz.query.options(joinedload(Quiz.questions)).get_or_404(quiz_id)
+    # нужно было ддо применения lazy="dinamic"
+    # quiz = Quiz.query.options(joinedload(Quiz.questions)).get_or_404(quiz_id)
 
     quiz = Quiz.query.get_or_404(quiz_id)
 
     quiz_dict = quiz.to_dict()
 
     return render_template('quiz/quiz_play.html', quiz=quiz_dict)
+
 
 @blueprint.route('/quiz_pass/', methods=['POST'])
 def quiz_get_result():
@@ -462,6 +485,7 @@ def quiz_get_result():
 
     return jsonify(200, 'OK')
 
+
 @blueprint.route('/quiz/show_results', methods=['GET'])
 @check_user_roles(['all-seeing'])
 @can_edit_permission
@@ -477,10 +501,44 @@ def show_results():
 @check_user_roles(['all-seeing'])
 @can_edit_permission
 def result_details(result_id):
-    from flask_wiki.models import User, QuizResults, QuestionAnswerResult
+    from flask_wiki.models import QuizResults, QuestionAnswerResult
 
     res = QuestionAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id)
-    #res = QuestonAnswerResult.query.get(result_id)
+    # res = QuestonAnswerResult.query.get(result_id)
     return render_template("quiz/result_details.html",
                            questions=res,
+                           )
+
+
+@blueprint.route('/create_review', methods=['GET', 'POST'])
+@check_user_roles(['all-seeing', 'reviewer'])
+def create_review():
+    form = ReviewForm()
+    if form.validate_on_submit():
+        review = Review()
+        form.populate_obj(review)
+        review.reviewer = current_user
+        try:
+            db.session.add(review)
+            db.session.commit()
+        except IntegrityError as e:
+            logger.error(f'Ошибка при сохранении review {review.id, review.page_title}')
+            flash("Ошибка при сохранении", category='danger')
+            return render_template('review/review.html',
+                                   form=form,
+                                   )
+
+        flash("Рецензия сохранена", category='success')
+        return render_template('review/review.html',
+                               form=form,
+                               )
+
+    return render_template('review/review.html',
+                           form=form,
+                           )
+@blueprint.route('/review_details/<review_id>', methods=['GET'])
+def review_details(review_id):
+    review = Review.query.get_or_404(review_id)
+    return render_template('review/review_details.html',
+                           review=review,
                            )

@@ -23,6 +23,7 @@ from flask_wiki.auth.forms import RegistrationForm
 from flask_wiki.models import PageDb, FilesUrls
 from flask_wiki.models import User
 from flask_wiki.my_options.delete_fileurl_from_db import delete_fileurl_from_db, find_page_in_db
+from flask_wiki.views import check_user_roles
 
 user_auth = Blueprint('user_auth',
                       __name__,
@@ -198,11 +199,12 @@ def upload_files():
     #
     # return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
 
-
-@user_auth.route("/remove_files/", methods=['GET'], endpoint="remove_files")
+#удаление отключено
+#@user_auth.route("/remove_files/", methods=['GET'], endpoint="remove_files")
 @login_required
+@check_user_roles(['all-seeing', 'reviewer'])
 def remove_files():
-    ''' Функция удаления файла из S3'''
+    """ Функция удаления файла из S3"""
     from flask_wiki.my_options import create_client, BUCKET
     from dotenv import load_dotenv
     import os

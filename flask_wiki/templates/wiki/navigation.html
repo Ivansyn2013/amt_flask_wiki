@@ -37,15 +37,29 @@
                   <a class="nav-link" href="{{ url_for('wiki.files') }}">{{ _('Файлы') }}</a>
               </li>
 
-              <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('wiki.create_page') }}">
-                    {{ _('Создать страницу') }}</a>
-              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle"
+                   href=""
+                   role="button"
+                   data-toggle="dropdown"
+                   aria-expanded="false"
+                >{{ _(' Создать') }}
+                </a>
+                <div class="dropdown-menu">
+                  <a href="{{ url_for('wiki.create_page') }}" class="dropdown-item"> Создать страницу</a>
+                  <a href="{{ url_for('wiki.show_quizzs') }}" class="dropdown-item"> Тесты</a>
+                  <a href="{{ url_for('wiki.create_review') }}" class="dropdown-item"> Создать рецензию</a>
+                </div>
+            </li>
+{#                <li class="nav-item">#}
+{#                    <a class="nav-link" href="{{ url_for('wiki.create_page') }}">#}
+{#                      {{ _('Создать страницу') }}</a>#}
+{#                </li>#}
 
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('wiki.show_quizzs') }}">
-                  {{ _('Тесты') }}</a>
-              </li>
+{#                <li class="nav-item">#}
+{#                  <a class="nav-link" href="{{ url_for('wiki.show_quizzs') }}">#}
+{#                    {{ _('Тесты') }}</a>#}
+{#                </li>#}
 
             {% endif %}
 
