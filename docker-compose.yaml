@@ -29,7 +29,7 @@ services:
     env_file:
       - ".env"
     volumes:
-      - "./migrations:/app/migrations"
+      - "/home/common_user/AMT_education_service/amt_flask_wiki/migrations:/app/migrations"
       - "/home/common_user/AMT_education_service/data:/app/data"
     expose:
     - "5006"
