@@ -487,7 +487,7 @@ def quiz_get_result():
 
 
 @blueprint.route('/quiz/show_results', methods=['GET'])
-@check_user_roles(['all-seeing'])
+@check_user_roles(['all-seeing', 'reviewer', 'see-test'])
 @can_edit_permission
 def show_results():
     from flask_wiki.models import User, QuizResults
@@ -498,15 +498,17 @@ def show_results():
 
 
 @blueprint.route('/quiz/result_details/<result_id>', methods=['GET'])
-@check_user_roles(['all-seeing'])
+@check_user_roles(['all-seeing', 'reviewer', 'see-test'])
 @can_edit_permission
 def result_details(result_id):
     from flask_wiki.models import QuizResults, QuestionAnswerResult
 
     res = QuestionAnswerResult.query.join(QuizResults).filter(QuizResults._id == result_id)
+    correct = len(res.filter(QuestionAnswerResult.correct == True).all())
     # res = QuestonAnswerResult.query.get(result_id)
     return render_template("quiz/result_details.html",
                            questions=res,
+                           correct=correct,
                            )
 
 
@@ -537,6 +539,7 @@ def create_review():
                            form=form,
                            )
 @blueprint.route('/review_details/<review_id>', methods=['GET'])
+@can_edit_permission
 def review_details(review_id):
     review = Review.query.get_or_404(review_id)
     return render_template('review/review_details.html',

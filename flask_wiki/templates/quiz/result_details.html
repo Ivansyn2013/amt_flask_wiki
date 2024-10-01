@@ -6,7 +6,7 @@
     <h2>Название теста: {{ questions.first().quiz_results.quiz.name }}</h2>
     <h3>Дата проведения: {{ questions.first().quiz_results.created_at }}</h3>
     <h3>Результат: правильных ответов
-      {{ questions.filter(correct==True).all() | length }}
+      {{ correct }}
       из
       {{ questions.all() | length }} </h3>
     {% for i, q in enumerate(questions) %}

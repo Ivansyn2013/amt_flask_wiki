@@ -32,7 +32,7 @@ class User(db.Model, UserMixin):
     _password = Column(LargeBinary, nullable=False, default=flask_crypt.generate_password_hash('123'))
     email = Column(String(255), nullable=False, default="", server_default="")
     # role = Column(String(200), nullable=True, default="", server_default="")
-    USERS_ROLES = ["usual", "dep_chef", "all-seeing", "reviewer"]
+    USERS_ROLES = ["usual", "dep_chef", "all-seeing", "see-test", "reviewer"]
     roles = Column(p_Array(String(50)), nullable=True)
 
     # Foreignkeys
