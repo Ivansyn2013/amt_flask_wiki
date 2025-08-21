@@ -1,16 +1,24 @@
-FROM ivanvic/amt_wiki_req:v1
-WORKDIR /app
+FROM python:3.11-slim
+
+LABEL \
+    name="amt_wiki" \
+    version="3.0.0" \
+    description="Amt Wiki Application" \
+    maintainer="titmouse"
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Установка Poetry
+RUN pip install --no-cache-dir poetry
+
+# Установка зависимостей Python
 COPY . /app/
-#RUN pip install poetry
-#RUN poetry config virtualenvs.create false && poetry install \
-#    --no-interaction --no-ansi
-#RUN pip install gunicorn
-RUN apt-get update \
-    && apt-get -y install libpq-dev gcc \
-    && pip install psycopg2
-RUN poetry install
+WORKDIR /app/
+RUN poetry add psycopg2
+RUN poetry install --without dev
 
-#RUN flask db upgrade
-#RUN flask db migrate
 
-CMD ["gunicorn", "--workers=4", "wsgi:app", "-b", "0.0.0.0:5006"]
+

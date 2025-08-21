@@ -9,15 +9,17 @@ services:
       - "./nginx/nginx-test-serv.conf:/etc/nginx/conf.d/default.conf"
       - "../tmp_big_files/:/tmp_big_files"
     depends_on:
-      - app_amt_wiki_ver3
+      - app_amt_wiki
     networks:
       - amt_education_net
 
-  app_amt_wiki_ver3:
+  app_amt_wiki:
     build:
       dockerfile: Dockerfile
       context: .
-    container_name: amt_wiki_ver3
+
+    image: amt_wiki:3.0.0
+    container_name: amt_wiki
     env_file:
       - ".env"
     volumes:
@@ -26,6 +28,8 @@ services:
       - "5006"
     networks:
       - amt_education_net
+    working_dir: /app
+    command: poetry run gunicorn --workers=4 wsgi:app -b 0.0.0.0:5006
 
 networks:
   amt_education_net:
