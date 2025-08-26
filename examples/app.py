@@ -14,6 +14,8 @@ from flask_babelex import Babel, Domain
 from flask_babelex import gettext as _
 from flask_bootstrap import Bootstrap4
 from pkg_resources import resource_filename
+from sqlalchemy.testing.plugin.plugin_base import logging
+
 from db.init_db import db
 from security import flask_crypt
 from flask_wiki.auth.views import login_manager
@@ -24,6 +26,10 @@ from flask_admin.contrib.sqla import ModelView
 from flask_wiki.admin import MyAdminView
 from flask_wiki.models.user import User
 from flask_wiki.context_processor import inject_quiz_nums_context
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def create_app(test_config=None): # не забудь поменять
     # create and configure the app
@@ -41,17 +47,19 @@ def create_app(test_config=None): # не забудь поменять
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
+        logger.info("test_config is None")
         app.config.from_pyfile('config.py', silent=True)
         app.config.from_object(Deploy)
-    elif test_config == 'test_mode':
+    elif test_config:
+        logger.info("test_config is True")
         app.config.from_pyfile('config.py', silent=True)
         app.config.from_object(Test_config)
-    else:
-        # load the test config if passed in
-        app.config.from_pyfile('config.py', silent=True)
-        # name of var with env path
-        app.config.from_object(Deploy)
-        #print(app.config)
+    # else:
+    #     # load the test config if passed in
+    #     app.config.from_pyfile('config.py', silent=True)
+    #     # name of var with env path
+    #     app.config.from_object(Deploy)
+    #     #print(app.config)
 
     Bootstrap4(app)
     Wiki(app)

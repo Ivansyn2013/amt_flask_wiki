@@ -5,7 +5,7 @@ services:
     image: postgres:13-bookworm
 #    image: local_db_amtwiki
     volumes:
-      - './backs/2024-08-20-wiki-backup.sql:/backup/2024-08-20-wiki-backup.sql'
+      - './backs/2025-06-09-wiki-backup.sql:/backup/wiki-backup.sql'
       - './scripts/create_test_db.sh:/docker-entrypoint-initdb.d/init_db.sh'
       - './scripts:/db_entripoints'
     env_file:
@@ -21,12 +21,9 @@ services:
 #   command:
 #      ["bash", "-c", "psql -U $PGUSER -d $PGDB -f /db_backs/2024-03-23-wiki-backup.sql"]
 #      ["bash", "-c", "/db_entripoints/create_test_db.sh"]
-
-#networks:
-#  amt_education_net:
-#    name: amt_education_net
-#    driver: bridge
-#    ipam:
-#      driver: default
-#      config:
-#        - subnet: 172.18.0.0/16
+    networks:
+      - amt_education_net
+networks:
+  amt_education_net:
+    external: true
+    name: amt_education_net

@@ -25,7 +25,7 @@ psql -h $UNIX_HOST -U postgres -c "$CREATE_DB" &&           echo "Create db $PGD
 psql -h $UNIX_HOST -U postgres -c "$CREATE_ROLE" &&         echo "Create role $PGUSER success"
 psql -h $UNIX_HOST -U postgres -c "$GRANT_PREV" &&          echo "Create grant prev success"
 psql -h $UNIX_HOST -U postgres -c "$CHANGE_TABLES_OWNER" && echo "Create table owner change success"
-psql -h $UNIX_HOST -U postgres -d "$PGDB" -f /backup/2024-08-20-wiki-backup.sql \
+psql -h $UNIX_HOST -U postgres -d "$PGDB" -f /backup/wiki-backup.sql \
  && echo "Upload backup success"
 
 # Continue with the default entrypoint command

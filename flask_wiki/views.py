@@ -16,7 +16,7 @@ from functools import wraps
 
 from babel import Locale
 from flask import (Blueprint, abort, current_app, flash, redirect,
-                   render_template, request, url_for, jsonify)
+                   render_template, request, url_for, jsonify, Response)
 from flask_babelex import gettext as _
 from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
@@ -248,6 +248,7 @@ def delete_file(filename):
 @blueprint.route('/files', methods=['GET', 'POST'])
 @can_edit_permission
 def files():
+    logger.debug("Get in files")
     if request.method == 'POST' and current_app.config['WIKI_EDIT_UI_PERMISSION']():
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -274,6 +275,38 @@ def files():
     return render_template(
         current_app.config.get('WIKI_FILES_TEMPLATE'),
         files=files)
+
+
+@blueprint.route('/wiki/files/<path:filename>')
+@can_read_permission
+def serve_file(filename):
+    """
+    Отдача защищенных файлов с проверкой авторизации
+    """
+    # Проверяем права доступа (добавьте свою логику)
+    logger.debug("Get in serve_file")
+    if not current_user.is_authenticated:
+        abort(403)
+
+    # # Дополнительная проверка прав если нужно
+    # if not has_file_access(current_user, filename):
+    #     abort(403)
+
+    # Безопасный путь к файлу
+    upload_folder = current_app.config['WIKI_UPLOAD_FOLDER']
+    safe_path = os.path.abspath(os.path.join(upload_folder, filename))
+
+    # Защита от path traversal
+    if not safe_path.startswith(os.path.abspath(upload_folder)):
+        abort(404)
+    if not allowed_file(filename):
+        abort(404)
+    # Отдаем файл с поддержкой Range запросов
+
+    resp = Response()
+    resp.headers['X-Accel-Redirect'] = f'/wiki/files/{filename}'
+    return resp
+
 
 
 @blueprint.route('/search', methods=['GET'])

@@ -38,9 +38,9 @@ class Test_config(DbConfig):
 
     PGUSER = os.environ.get("PGUSER")
     PGPASSWORD = os.environ.get("PGPASSWORD")
-    PGHOST = os.environ.get("PGHOST")
-    PGDB = os.environ.get('PGDB_TEST')
-    PORT = os.environ.get("TEST_PG_PORT")
+    PGHOST = os.environ.get("PGTESTHOST")
+    PGDB = os.environ.get('PGDB')
+    PORT = os.environ.get("PGPORT")
 
     TESTING = os.environ.get('TESTING')
     DEBUG = os.environ.get('DEBUG')

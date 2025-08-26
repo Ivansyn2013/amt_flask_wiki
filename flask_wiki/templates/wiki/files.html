@@ -28,11 +28,12 @@
         <article class="d-flex flex-wrap">
             {% for file in files -%}
             <figure id="{{file}}" class="figure m-2">
-                <img src="{{ url_for('uploaded_files', filename=file) }}" class="figure-img img-fluid rounded img-thumbnail"
+                <img src="{{ url_for('wiki.serve_file', filename=file) }}" class="figure-img img-fluid rounded
+                img-thumbnail"
                                                                           alt="{{ file }}" />
                 <figcaption class="figure-caption text-center">
-                    <a href="{{ url_for('uploaded_files', filename=file) }}">{{ file }}</a>
-                    <button data-name="{{ file }}" data-link="{{ url_for('uploaded_files', filename=file) }}"
+                    <a href="{{ url_for('wiki.serve_file', filename=file) }}">{{ file }}</a>
+                    <button data-name="{{ file }}" data-link="{{ url_for('wiki.serve_file', filename=file) }}"
                                                    class="copy-md-code btn btn-sm btn-outline-primary">
                         <i class="fa fa-clipboard"></i>
                     </button>

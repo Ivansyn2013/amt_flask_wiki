@@ -13,12 +13,14 @@ RUN apt-get update && apt-get install -y \
 
 # Установка Poetry
 RUN pip install --no-cache-dir poetry
-
-# Установка зависимостей Python
-COPY . /app/
 WORKDIR /app/
+COPY pyproject.toml poetry.lock README.md ./
+# Установка зависимостей Python
 RUN poetry add psycopg2
-RUN poetry install --without dev
+RUN poetry install --without dev --no-root
 
+COPY . .
+
+WORKDIR /app
 
 
