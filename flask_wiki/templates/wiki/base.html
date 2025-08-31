@@ -85,6 +85,8 @@
   {{ bootstrap.load_js() }}
   <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/wiki.js') }}"></script>
   {% endblock %}
+  <!-- Модальное затемнение (динамически управляется JS) -->
+  <div id="video-modal-overlay" class="video-modal-overlay d-none"></div>
 </body>
 
 </html>

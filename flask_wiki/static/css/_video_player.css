@@ -1,29 +1,77 @@
 /* Файл: static/css/_video_player.css */
 
-/* Контейнер всего плеера */
-.video-player-container {
+/* === Встроенный плеер (в DOM) === */
+.video-player-container.embedded {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    display: block;
+}
+
+/* Свёрнутое состояние — как кнопка */
+.video-player-minimized {
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.video-player-minimized:hover {
+    background: #e9ecef;
+}
+
+/* Развёрнутое состояние — внутри статьи */
+.video-player-expanded {
+    display: block;
+}
+
+.video-player-expanded.d-none {
+    display: none;
+}
+
+/* === Модальный режим (при открытии) === */
+.video-modal-overlay {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.video-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* === Стили для полноэкранного модального плеера === */
+.video-player-container.modal-mode {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 800px;
     max-width: 90vw;
     height: 500px;
-    max-height: 70vh;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    z-index: 10000; /* Очень высокий z-index, чтобы был поверх всех элементов */
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    max-height: 80vh;
+    z-index: 9999;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
 }
 
-/* Состояния контейнера */
-.video-player-container.minimized {
-    height: 60px;
-    width: 400px;
+.video-player-container.modal-mode .video-player-body .row {
+    height: 100%;
 }
 
+/* Плейлист можно скрыть */
 .video-player-container.playlist-hidden .playlist-column {
     display: none;
 }
@@ -33,93 +81,32 @@
     max-width: 100%;
 }
 
-/* Тело плеера */
-.video-player-body {
-    flex-grow: 1;
-    min-height: 0; /* Важно для корректного растягивания в колонках */
-}
-
-/* Область видео должна растягиваться */
-.plyr-container {
-    height: 100%;
-}
-
-/* Стилизация плейлиста */
-.playlist-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border-left: 1px solid #dee2e6;
-}
-
-.playlist-items {
-    overflow-y: auto;
-    flex-grow: 1;
-}
-
-.playlist-item {
-    padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid #f8f9fa;
-    transition: background-color 0.15s ease-in-out;
-}
-
-.playlist-item:hover {
-    background-color: #f8f9fa;
-}
-
-.playlist-item.active {
-    background-color: #e3f2fd;
-    border-left: 3px solid #007bff;
-}
-
-.playlist-thumb {
-    width: 60px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-.video-title {
-    font-size: 0.9rem;
-    line-height: 1.2;
-}
-
 /* Адаптивность */
 @media (max-width: 768px) {
-    .video-player-container {
-        bottom: 0;
-        right: 0;
-        width: 100vw;
-        max-width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        border-radius: 0;
+    .video-player-container.modal-mode {
+        width: 95vw;
+        height: 70vh;
     }
 
-    .video-player-container.minimized {
-        height: 60px;
-        width: 100%;
-        bottom: 0;
-        border-radius: 12px 12px 0 0;
-    }
-
-    .video-player-body .row {
-        flex-direction: column;
-    }
-
-    .plyr-container {
-        height: 40vh;
-    }
-
-    .playlist-container {
-        border-left: none;
-        border-top: 1px solid #dee2e6;
+    .video-player-container.embedded {
+        margin: 10px auto;
     }
 }
 
-/* Кастомизация самого Plyr, если нужно */
+/* Plyr */
 .plyr {
-    border-radius: 0; /* Радиус уже задан у внешнего контейнера */
     height: 100%;
+    border-radius: 0;
+}
+
+.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
