@@ -176,18 +176,31 @@ def page(url):
 
         files_urls = page_db.file_url.all()
         reviews = Review.query.filter_by(page_title=page.title).all()
+
+        extensions = current_app.config.get('WIKI_VIDEOS_EXTENSION')
+        video_list = [{
+            "url":video.file_url,
+            "poster":"",
+            "title":video.file_name.split('.')[0],
+        } for video in files_urls
+            if any(video.file_name.lower().endswith(ext.lower()) for ext in
+                   extensions)
+        ]
+
     except Exception as error:
         current_app.logger.error(error)
         if type(error) is not AttributeError:
             flash('Ошибка подключения', 'error')
         files_urls = None
         reviews = None
+        video_list = []
 
     return render_template(
         current_app.config.get('WIKI_PAGE_TEMPLATE'),
         page=page,
         files_urls=files_urls,
-        reviews=reviews
+        reviews=reviews,
+        video_list=video_list
     )
 
 
@@ -277,7 +290,7 @@ def files():
         files=files)
 
 
-@blueprint.route('/wiki/files/<path:filename>')
+@blueprint.route('/files/<path:filename>', methods=['GET'])
 @can_read_permission
 def serve_file(filename):
     """
@@ -304,7 +317,8 @@ def serve_file(filename):
     # Отдаем файл с поддержкой Range запросов
 
     resp = Response()
-    resp.headers['X-Accel-Redirect'] = f'/wiki/files/{filename}'
+    resp.headers['X-Accel-Redirect'] = f'/internal_files/{filename}'
+    resp.headers.pop("Content-Type")
     return resp
 
 

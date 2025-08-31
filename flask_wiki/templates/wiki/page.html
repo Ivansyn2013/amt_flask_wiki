@@ -8,7 +8,18 @@
 -->
 
 {% extends config.get('WIKI_BASE_TEMPLATE') %}
+{% from "macro/_video_player.html" import video_player_resources, video_player %}
+
+
 {% set active_page = "page" %}
+{# Connect plyer player styles#}
+{% block styles %}
+  {{ super() }}
+  {% if video_list|length > 0 %}
+    {{ video_player_resources() }}
+  {% endif %}
+
+{% endblock %}
 
 {% block content %}
 {{ super() }}
@@ -95,7 +106,10 @@
             </footer>
         </header>
         <article class="content">
-        {{ page }}
+          {% if video_list|length > 0 %}
+            {{ video_player(video_list, 'main-video-player') }}
+          {% endif %}
+          {{ page }}
         </article>
     </div>
     <aside class="col-md-3">
@@ -140,5 +154,9 @@
 {% endblock %}
 {% block scripts %}
   {{ super() }}
-  <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/upload_video_func.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/upload_video_func.js') }}" defer></script>
+  {% if video_list|length > 0 %}
+    <script type="text/javascript" src="{{ url_for('wiki.static', filename='js/video_player.js') }}" defer></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js" defer></script>
+  {% endif %}
 {% endblock %}

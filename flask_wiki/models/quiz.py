@@ -1,31 +1,30 @@
-from db.init_db import db
-from flask_wiki.my_options import uuid_to_str
-from sqlalchemy import (event,
-                        Column,
+from datetime import datetime
+
+from sqlalchemy import (Column,
                         Integer,
                         String,
                         Boolean,
-                        LargeBinary,
                         ForeignKey,
-                        UUID,
                         DateTime,
                         TEXT,
                         )
 from sqlalchemy.orm import relationship
-from flask_login import UserMixin, current_user
-from datetime import datetime
-from flask_wiki.models.departments import Department
+
+from db.init_db import db
+from flask_wiki.my_options import uuid_to_str
 
 quizs_users_relation_table = db.Table('quizs_users_relation_table',
-                                      db.Column('quiz_id', String, db.ForeignKey('quiz._id',
-                                                                                 ondelete='CASCADE')),
-                                      db.Column('user_id', String, db.ForeignKey('user._id',
-                                                                                 ondelete='CASCADE')),
+                                      db.Column('quiz_id', String,
+                                                db.ForeignKey('quiz._id',
+                                                              ondelete='CASCADE')),
+                                      db.Column('user_id', String,
+                                                db.ForeignKey('user._id',
+                                                              ondelete='CASCADE')),
                                       )
 
 
 class Quiz(db.Model):
-    '''
+    """"
     created_at - создан кем, задается однажды
     updated_at - создан когда, задается однажды
     name - название теста
@@ -37,11 +36,12 @@ class Quiz(db.Model):
     questions - вопросы теста, из модели тестов М-О
     url - url страницы для сдачи теста
     department - отдел компании
-    '''
+    """
     __tablename__ = 'quiz'
     _id = Column(String, primary_key=True, default=uuid_to_str)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow,
+                        onupdate=datetime.utcnow, nullable=True)
     name = Column(String, unique=True, nullable=False)
     threshold = Column(Integer, nullable=False)
     url = Column(String, nullable=True)
@@ -56,14 +56,15 @@ class Quiz(db.Model):
     created_by_user = db.relationship('User', foreign_keys=[created_by],
                                       # back_populates='created_quizs',
                                       primaryjoin="User._id == Quiz.created_by")
-    update_by = Column(String, ForeignKey('user._id'), nullable=True, default=None)
+    update_by = Column(String, ForeignKey('user._id'), nullable=True,
+                       default=None)
 
     # Many-to-Many
     assigned_to = relationship('User',
                                secondary=quizs_users_relation_table,
                                backref="quizzes",
                                overlaps="assigned_to,quizzes",
-                               #cascade='all, delete'
+                               # cascade='all, delete'
                                )
 
     # One-to-many
@@ -108,11 +109,12 @@ class QuizAnswer(db.Model):
     correct = Column(Boolean, nullable=False, default=False)
 
     # ForeignKey O-M
-    question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
+    question_id = Column(String, ForeignKey('quiz_questions._id'),
+                         nullable=False)
     question_answer_result = relationship('QuestionAnswerResult',
-                                         lazy='dynamic',
-                                         back_populates='answer_instance',
-                                         )
+                                          lazy='dynamic',
+                                          back_populates='answer_instance',
+                                          )
 
 
 class QuizQuestion(db.Model):
@@ -130,10 +132,10 @@ class QuizQuestion(db.Model):
                            lazy='dynamic',
                            cascade='all, delete-orphan')
 
-    #relations
+    # relations
     question_answer_result = relationship('QuestionAnswerResult',
-                                         lazy='dynamic',
-                                         back_populates='question_instance')
+                                          lazy='dynamic',
+                                          back_populates='question_instance')
 
     def __repr__(self):
         return 'QuizQuestion(id={0._id})'.format(self)
@@ -166,23 +168,28 @@ class QuestionAnswerResult(db.Model):
     __tablename__ = 'question_answer_results'
     _id = Column(String, primary_key=True, default=uuid_to_str)
 
-    quiz_result_id = Column(String, ForeignKey('quiz_results._id'), nullable=False)
+    quiz_result_id = Column(String, ForeignKey('quiz_results._id'),
+                            nullable=False)
 
-    question_id = Column(String, ForeignKey('quiz_questions._id'), nullable=False)
+    question_id = Column(String, ForeignKey('quiz_questions._id'),
+                         nullable=False)
     answer_id = Column(String, ForeignKey('quiz_answers._id'), nullable=False)
     correct = Column(Boolean, nullable=False)
 
     # Relationships
-    question_instance = relationship("QuizQuestion",  # for get inctanse not a just id
+    question_instance = relationship("QuizQuestion",
+                                     # for get inctanse not a just id
                                      lazy="joined",
                                      back_populates='question_answer_result',
                                      uselist=False,
                                      )
 
-    answer_instance = relationship("QuizAnswer",  # for get inctanse not a just id
+    answer_instance = relationship("QuizAnswer",
+                                   # for get inctanse not a just id
                                    lazy="joined",
                                    back_populates='question_answer_result',
                                    uselist=False,
                                    )
 
-    quiz_results = relationship("QuizResults", back_populates='question_answers_results')
+    quiz_results = relationship("QuizResults",
+                                back_populates='question_answers_results')

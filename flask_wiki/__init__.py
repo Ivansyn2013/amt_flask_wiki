@@ -48,9 +48,10 @@ class Wiki(object):
             app.config.get('WIKI_URL_PREFIX') + '/files/<filename>',
             'uploaded_video', build_only=True)
 
+        # this rule give data by flask from folder use for dev not for prod
+        # app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {app.config.get(
+        #     'WIKI_URL_PREFIX') + '/files': app.config['WIKI_UPLOAD_FOLDER']})
 
-        app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {app.config.get(
-            'WIKI_URL_PREFIX') + '/files': app.config['WIKI_UPLOAD_FOLDER']})
         app.extensions['flask-wiki'] = self
 
         migrate = Migrate(app, db, compare_type=True)

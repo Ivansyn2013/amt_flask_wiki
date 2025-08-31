@@ -1,0 +1,83 @@
+{# Файл: templates/_video_player.html #}
+{# Макрос для подключения CSS/JS ресурсов Plyr #}
+{% macro video_player_resources() %}
+    <!-- Plyr CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <!-- Play list -->
+    <link rel="stylesheet" href="{{ url_for('wiki.static', filename='css/_video_player.css') }}" />
+{% endmacro %}
+
+{# Макрос для отрисовки самого плеера и плейлиста #}
+{% macro video_player(video_list, player_id='main-player') %}
+  <!-- Весь контейнер плеера -->
+  <div id="video-player-container" class="video-player-container">
+      <!-- Шапка с кнопками управления -->
+      <div class="video-player-header d-flex justify-content-between align-items-center p-2 bg-dark text-light">
+          <h6 class="mb-0" id="now-playing-title">Выберите видео</h6>
+          <div>
+              <button type="button" class="btn btn-sm btn-outline-light toggle-playlist mr-2" aria-label="Свернуть плейлист">
+                  <i class="fa fa-list"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-light toggle-player mr-2" aria-label="Свернуть плеер">
+                  <i class="fa fa-window-minimize"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-light close-player" aria-label="Закрыть плеер">
+                  <i class="fa fa-times"></i>
+              </button>
+          </div>
+      </div>
+
+      <!-- Основная область с видео и плейлистом -->
+      <div class="video-player-body">
+          <div class="row no-gutters h-100">
+              <!-- Область видео -->
+              <div class="col-md-8 col-sm-12">
+                  <div class="plyr-container h-100">
+                      <video
+                          id="{{ player_id }}"
+                          playsinline
+                          controls
+                          poster=""
+                          class="h-100 w-100"
+                      >
+                          <!-- Источники видео будут динамически подставляться через JS -->
+                          <source src="" type="video/mp4" />
+                          <p>Ваш браузер не поддерживает HTML5 видео.</p>
+                      </video>
+                  </div>
+              </div>
+
+              <!-- Область плейлиста (справа на десктопе, снизу на мобильных) -->
+              <div class="col-md-4 col-sm-12 playlist-column">
+                  <div class="playlist-container h-100">
+                      <div class="playlist-header p-2 bg-secondary text-light">
+                          <small><strong>Плейлист</strong></small>
+                          <span class="badge badge-pill badge-light ml-1">{{ video_list|length }}</span>
+                      </div>
+                      <div class="playlist-items">
+                          {% for video in video_list %}
+                          <div class="playlist-item"
+                               data-video-src="{{ video.url }}"
+                               data-poster-src="{{ video.poster }}"
+                               data-video-title="{{ video.title }}"
+                               role="button"
+                          >
+                              <div class="media">
+                                  <img src="{{ video.poster }}"
+                                       alt="{{ video.title }}"
+                                       class="playlist-thumb mr-2"
+                                       loading="lazy">
+                                  <div class="media-body">
+                                      <h6 class="video-title mb-0">{{ video.title }}</h6>
+                                      <small class="text-muted">{{ video.duration if video.duration else '' }}</small>
+                                  </div>
+                              </div>
+                          </div>
+                          {% endfor %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+{% endmacro %}
