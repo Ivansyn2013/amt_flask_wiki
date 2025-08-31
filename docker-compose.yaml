@@ -1,6 +1,6 @@
 version: '3.9'
 services:
-  nginx_amt_wiki_ver2:
+  nginx:
     image: nginx:1.23-alpine
     container_name: nginx_education
     ports:
@@ -12,6 +12,10 @@ services:
 
       - "./ssl/certbot/conf:/etc/letsencrypt"
       - "./ssl/certbot/www:/var/www/certbot"
+
+      - "{$FLASK_WIKI_STATIC_PATH}:/app/static"
+      - "{$FLASK_WIKI_ADMIN_STATIC_PATH}:/app/admin/static"
+      - "{$FLASK_WIKI_DATAFILES_PATH}:/app/media"
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     depends_on:
       - certbot
@@ -35,6 +39,8 @@ services:
     - "5006"
     networks:
       - amt_education_net
+    working_dir: /app
+    command: poetry run gunicorn --workers=4 wsgi:app -b 0.0.0.0:5006
 
 
   certbot:

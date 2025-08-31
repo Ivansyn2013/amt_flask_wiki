@@ -65,7 +65,7 @@
                   <div class="media">
                     <img src="{{ video.poster or '/wiki/static/img/video-thumb.png' }}"
                          alt="{{ video.title }}"
-                         class="playlist-thumb mr-2"
+                         class="playlist-thumb mr-2 {% if not video.poster %}d-none{% endif %}"
                          loading="lazy">
                     <div class="media-body">
                       <h6 class="video-title mb-0">{{ video.title }}</h6>

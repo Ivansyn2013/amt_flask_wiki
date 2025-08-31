@@ -33,7 +33,7 @@ class VideoPlayerManager {
         this.bindEvents();
         // this.loadFirstVideo();
         this.hasInitialized = true;
-        console.log("Plyer initialising")
+        // console.log("Plyer initialising")
     }
 
     cacheDomElements() {
@@ -54,12 +54,11 @@ class VideoPlayerManager {
         const videoElement = document.getElementById('main-video-player');
 
         if (!videoElement) {
-            console.error('Video element not found!');
             console.error('❌ Video element not found!');
-            console.log('Available video elements:');
-            allVideos.forEach(video => {
-                console.log('-', video.id, video);
-            });
+            // console.log('Available video elements:');
+            // allVideos.forEach(video => {
+            //     console.log('-', video.id, video);
+            // });
             return false;
             return;
         }
@@ -194,7 +193,9 @@ class VideoPlayerManager {
             title: playlistItem.dataset.videoTitle
         };
 
-        console.log('Загружаем видео:', this.currentVideo);
+        console.log('Загружаем видео:',
+            // this.currentVideo
+        );
 
         // Обновляем интерфейс
         this.domElements.nowPlayingTitle.textContent = this.currentVideo.title;

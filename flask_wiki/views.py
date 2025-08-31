@@ -180,7 +180,7 @@ def page(url):
         extensions = current_app.config.get('WIKI_VIDEOS_EXTENSION')
         video_list = [{
             "url":video.file_url,
-            "poster":"",
+            "poster": None,
             "title":video.file_name.split('.')[0],
         } for video in files_urls
             if any(video.file_name.lower().endswith(ext.lower()) for ext in

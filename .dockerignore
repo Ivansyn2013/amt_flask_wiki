@@ -1,0 +1,10 @@
+backs
+data
+docker_settings
+migrations.back.7z
+.env_local
+.env
+.git
+.idea
+__pycache__
+.env*
