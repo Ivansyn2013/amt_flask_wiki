@@ -55,9 +55,11 @@ class Quiz(db.Model):
     # подгуржать данные и передавать в шаблон created_by_userс view quiz_details
     created_by_user = db.relationship('User', foreign_keys=[created_by],
                                       # back_populates='created_quizs',
-                                      primaryjoin="User._id == Quiz.created_by")
+                                      # primaryjoin="User._id == Quiz.created_by"
+                                      )
     update_by = Column(String, ForeignKey('user._id'), nullable=True,
                        default=None)
+    updated_by_user = db.relationship('User', foreign_keys=[update_by])
 
     # Many-to-Many
     assigned_to = relationship('User',
@@ -73,6 +75,8 @@ class Quiz(db.Model):
                              lazy='dynamic',
                              cascade='all, delete-orphan')
     department_id = Column(String, ForeignKey('department._id'), nullable=True)
+    results = relationship('QuizResults', back_populates='quiz',
+                           cascade='all, delete-orphan')
 
     def to_dict(self):
         result = {}
@@ -152,7 +156,7 @@ class QuizResults(db.Model):
     # Foreign keys
     user_id = Column(String, ForeignKey('user._id'), nullable=False)
     quiz_id = Column(String, ForeignKey('quiz._id'), nullable=False)
-    quiz = relationship('Quiz', foreign_keys=[quiz_id])
+    quiz = relationship('Quiz', back_populates='results', foreign_keys=[quiz_id])
 
     question_answers_results = relationship('QuestionAnswerResult',
                                             back_populates='quiz_results',

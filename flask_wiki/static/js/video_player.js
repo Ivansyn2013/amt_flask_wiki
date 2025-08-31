@@ -8,6 +8,7 @@ class VideoPlayerManager {
         this.isMinimized = false;
         this.isPlaylistVisible = true;
         this.domElements = {};
+        this.hasInitialized = false;
 
         this.init();
     }
@@ -17,6 +18,7 @@ class VideoPlayerManager {
         this.initPlyr();
         this.bindEvents();
         // this.loadFirstVideo();
+        this.hasInitialized = true;
         console.log("Plyer initialising")
     }
 
@@ -34,10 +36,17 @@ class VideoPlayerManager {
     }
 
     initPlyr() {
-        const videoElement = this.domElements.videoElement;
+        // const videoElement = this.domElements.videoElement;
+        const videoElement = document.getElementById('main-video-player');
 
         if (!videoElement) {
             console.error('Video element not found!');
+            console.error('❌ Video element not found!');
+            console.log('Available video elements:');
+            allVideos.forEach(video => {
+            console.log('-', video.id, video);
+        });
+        return false;
             return;
         }
 
@@ -62,7 +71,9 @@ class VideoPlayerManager {
         // События Plyr
         this.player.on('ready', () => {
             console.log('Plyr готов к работе');
-            this.loadFirstVideo();
+            if (!this.hasInitialized) {
+                this.loadFirstVideo();
+            }
         });
 
         this.player.on('error', (error) => {
@@ -100,6 +111,20 @@ class VideoPlayerManager {
 
 
     loadVideoFromPlaylist(playlistItem) {
+    const newSrc = playlistItem.dataset.videoSrc.trim();
+
+    // Не перезагружать то же самое видео
+    if (this.currentVideo && this.currentVideo.src === newSrc) {
+        return;
+    }
+
+    // Уничтожаем предыдущую загрузку
+    // if (this.player.source) {
+    //     this.player.source = null; // очистка
+    // }
+
+
+
     // Убираем активный класс со всех элементов
     this.domElements.playlistItems.forEach(item => {
         item.classList.remove('active');
@@ -110,7 +135,7 @@ class VideoPlayerManager {
 
     // Получаем данные видео
     this.currentVideo = {
-        src: playlistItem.dataset.videoSrc,
+        src: encodeURI(playlistItem.dataset.videoSrc),
         poster: playlistItem.dataset.posterSrc || '', // Добавляем fallback
         title: playlistItem.dataset.videoTitle
     };
@@ -152,13 +177,13 @@ class VideoPlayerManager {
         minimize() {
             this.domElements.container.classList.add('minimized');
             this.isMinimized = true;
-            this.domElements.togglePlayerBtn.querySelector('i').className = 'fas fa-window-maximize';
+            this.domElements.togglePlayerBtn.querySelector('i').className = 'fa fa-window-maximize';
         }
 
         expand() {
             this.domElements.container.classList.remove('minimized');
             this.isMinimized = false;
-            this.domElements.togglePlayerBtn.querySelector('i').className = 'fas fa-window-minimize';
+            this.domElements.togglePlayerBtn.querySelector('i').className = 'fa fa-window-minimize';
         }
 
         togglePlaylist() {
@@ -166,7 +191,7 @@ class VideoPlayerManager {
             this.domElements.container.classList.toggle('playlist-hidden', !this.isPlaylistVisible);
 
             const icon = this.domElements.togglePlaylistBtn.querySelector('i');
-            icon.className = this.isPlaylistVisible ? 'fas fa-list' : 'fas fa-list-ul';
+            icon.className = this.isPlaylistVisible ? 'fa fa-list' : 'fa fa-list-ul';
         }
 
         close() {
@@ -178,7 +203,7 @@ class VideoPlayerManager {
 }
 
 // Глобальная функция для инициализации
-function initVideoPlayer(playerId = 'main-player') {
+function initVideoPlayer(playerId = 'main-video-player') {
     // Проверяем, есть ли контейнер плеера на странице
     if (document.getElementById('video-player-container')) {
         window.videoPlayer = new VideoPlayerManager(playerId);

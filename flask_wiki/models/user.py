@@ -41,9 +41,10 @@ class User(db.Model, UserMixin):
     # Many-to-many При двойной обозначении зависимости, при удалении , возникает ошибка
     assigned_quizs = relationship('Quiz',
                                   secondary=quiz.quizs_users_relation_table,
-                                  backref="users",
+                                  # backref="users",
+                                  back_populates='assigned_to',
                                   lazy='dynamic',
-                                  overlaps="assigned_to, quizzes",
+                                  # overlaps="assigned_to, quizzes",
                                   passive_deletes=True)
 
     @property

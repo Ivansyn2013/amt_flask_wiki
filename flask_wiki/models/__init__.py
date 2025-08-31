@@ -6,7 +6,7 @@ from .quiz import (Quiz,
                    QuizAnswer,
                    QuizResults,
                    QuizQuestion,
-                   Department,
+                   # Department,
                    QuestionAnswerResult)
 __all__ = [
     'User',
@@ -16,7 +16,7 @@ __all__ = [
     'QuizAnswer',
     'QuizResults',
     'QuizQuestion',
-    'Department',
+    # 'Department',
     'QuestionAnswerResult',
     'quizs_users_relation_table',
 ]
