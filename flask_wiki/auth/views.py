@@ -139,7 +139,7 @@ def unauthorized():
 @user_auth.route("/upload_files/", methods=['GET'], endpoint="upload_files")
 @login_required
 def upload_files():
-    '''Функция для загрузуки видео в хранилище'''
+    """Функция для загрузуки видео в хранилище"""
     from flask_wiki.my_options import allowed_file, create_client, BUCKET
     from dotenv import load_dotenv
     import os
@@ -199,10 +199,10 @@ def upload_files():
     #
     # return jsonify({'success': True, 'message': 'Фаил успешно загружен'})
 
-#удаление отключено
-#@user_auth.route("/remove_files/", methods=['GET'], endpoint="remove_files")
+
+@user_auth.route("/remove_files/", methods=['GET'], endpoint="remove_files")
 @login_required
-@check_user_roles(['all-seeing', 'reviewer'])
+@check_user_roles(['all-seeing'])
 def remove_files():
     """ Функция удаления файла из S3"""
     from flask_wiki.my_options import create_client, BUCKET

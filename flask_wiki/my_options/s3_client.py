@@ -8,7 +8,7 @@ load_dotenv()
 BUCKET = os.getenv("BUCKET_NAME")
 
 def get_obj_from_bucket(s3):
-    '''вернет список объектов из бакета , но если их больше 1000 нужен пагинатор'''
+    """вернет список объектов из бакета , но если их больше 1000 нужен пагинатор"""
     return [folder_name['Key'] for folder_name in s3.list_objects(Bucket=BUCKET)['Contents']]
 
 def create_client():
@@ -24,7 +24,7 @@ def create_client():
     return s3
 
 def check_folder_exists(s3, folder_name):
-    '''проверяет есть ли такая папка и создает если нет'''
+    """проверяет есть ли такая папка и создает если нет"""
     if folder_name not in get_obj_from_bucket(s3):
         s3.put_object(Bucket=BUCKET, Key=folder_name)
         print('folder {} created'.format(folder_name))
@@ -32,12 +32,12 @@ def check_folder_exists(s3, folder_name):
     return True
 
 def create_folder(s3, folder_name):
-    '''
+    """
     Создает объект как папку. Папка должна кончатьcя на /
     :param s3:
     :param folder_name:
     :return:
-    '''
+    """
     try:
         s3.put_object(Bucket=BUCKET, Key=f'{folder_name}/')
         return folder_name

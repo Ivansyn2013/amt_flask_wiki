@@ -13,6 +13,7 @@ def find_page_in_db(pagename):
     except Exception as e:
         db_logger.error(f"Не найдена страница {pagename} \n Ошибка {e}")
         return None
+
 def delete_fileurl_from_db(db_page, filename):
     try:
         files_url = db_page.file_url.filter_by(file_name=filename)
